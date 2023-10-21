@@ -1,0 +1,66 @@
+// https://nuxt.com/docs/api/configuration/nuxt-config
+export default defineNuxtConfig({
+    devtools: {enabled: true},
+    app: {
+        head: {
+            title: "Messenger",
+            meta: [
+                // <meta name="viewport" content="width=device-width, initial-scale=1">
+                {name: 'viewport', content: 'width=device-width, initial-scale=1'}
+            ],
+            script: [
+                {src: 'spaghetti.js'}
+            ],
+            link: [
+                {rel: 'icon', href: 'logo.svg'}
+            ],
+            // please note that this is an area that is likely to change
+            noscript: [
+                // <noscript>JavaScript is required</noscript>
+                {children: 'JavaScript is required'}
+            ]
+        }
+    },
+    $production: {
+        routeRules: {
+            '/**': {isr: true}
+        }
+    },
+    $development: {
+        //
+    },
+    runtimeConfig: {
+        apiSecret: '123',
+        public: {
+            apiBase: '/api'
+        }
+    },
+    webpack: {
+        loaders: {
+            vue: {
+                hotReload: true,
+            }
+        }
+    },
+    alias: {
+        // "~": "/<rootDir>",
+        // "@": "/<rootDir>",
+        // "~~": "/<rootDir>",
+        // "@@": "/<rootDir>",
+        // "assets": "/<rootDir>/assets",
+        // "public": "/<rootDir>/public"
+    },
+    css: ["/assets/main.scss"],
+    modules: [
+        "@nuxt/content",
+        "@pinia/nuxt",
+        '@element-plus/nuxt',
+    ],
+    elementPlus: { /** Options */ },
+    postcss: {
+        plugins: {
+            tailwindcss: {},
+            autoprefixer: {},
+        },
+    },
+})
