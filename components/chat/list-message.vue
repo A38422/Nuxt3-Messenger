@@ -1,8 +1,10 @@
 <script setup lang="ts">
 
-import {CirclePlus, MoreFilled, Search, VideoCamera} from "@element-plus/icons-vue";
+import _ from "lodash"
+import {CirclePlus, MoreFilled, MuteNotification, Search, VideoCamera} from "@element-plus/icons-vue";
 import {ClickOutside as vClickOutside} from 'element-plus'
 import MoreAction from "~/components/chat/list-message/more-action.vue";
+
 
 const sizeIcon = 25;
 const data = [
@@ -12,11 +14,12 @@ const data = [
         avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
+        online: false,
         visibleAction: false,
         action: {
             read: false,
-            notification: false,
-            block: false,
+            notification: true,
+            block: true,
         }
     },
     {
@@ -25,6 +28,7 @@ const data = [
         avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
+        online: false,
         visibleAction: false,
         action: {
             read: false,
@@ -38,6 +42,7 @@ const data = [
         avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
+        online: true,
         visibleAction: false,
         action: {
             read: false,
@@ -51,6 +56,7 @@ const data = [
         avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
+        online: true,
         visibleAction: false,
         action: {
             read: false,
@@ -64,6 +70,7 @@ const data = [
         avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
+        online: false,
         visibleAction: false,
         action: {
             read: false,
@@ -77,6 +84,7 @@ const data = [
         avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
+        online: true,
         visibleAction: false,
         action: {
             read: false,
@@ -90,6 +98,7 @@ const data = [
         avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
+        online: false,
         visibleAction: false,
         action: {
             read: false,
@@ -103,6 +112,7 @@ const data = [
         avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
+        online: true,
         visibleAction: false,
         action: {
             read: false,
@@ -116,6 +126,7 @@ const data = [
         avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
+        online: false,
         visibleAction: false,
         action: {
             read: false,
@@ -129,6 +140,7 @@ const data = [
         avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
+        online: false,
         visibleAction: false,
         action: {
             read: false,
@@ -142,6 +154,7 @@ const data = [
         avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
         message: "YOU: Okay, Let's get the at the moment af af asf fafa faf afasfasfas faf ",
         time: "1 min ago",
+        online: true,
         visibleAction: false,
         action: {
             read: false,
@@ -155,6 +168,7 @@ const data = [
         avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
+        online: true,
         visibleAction: false,
         action: {
             read: false,
@@ -168,6 +182,7 @@ const data = [
         avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
+        online: false,
         visibleAction: false,
         action: {
             read: false,
@@ -181,6 +196,7 @@ const data = [
         avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
+        online: false,
         visibleAction: false,
         action: {
             read: false,
@@ -194,6 +210,7 @@ const data = [
         avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
+        online: true,
         visibleAction: false,
         action: {
             read: false,
@@ -224,6 +241,15 @@ const onClickOutside = (event: any, item: any) => {
     item.visibleAction = false;
 };
 
+const handleClickItemMoreAction = _.debounce((key: string, item: any) => {
+    if (key === "delete") {
+        dataCopy.value = dataCopy.value.filter(i => i.id !== item.id);
+        return;
+    }
+
+    item.action[key] = !item.action[key];
+}, 200)
+
 </script>
 
 <template>
@@ -234,13 +260,13 @@ const onClickOutside = (event: any, item: any) => {
                 <el-icon :size="sizeIcon" class="mr-4 cursor-pointer">
                     <VideoCamera/>
                 </el-icon>
-                
+
                 <el-icon :size="sizeIcon" class="cursor-pointer">
                     <CirclePlus/>
                 </el-icon>
             </div>
         </div>
-        
+
         <div class="input-search__list-message px-5">
             <el-input
                 v-model="valueInput"
@@ -251,7 +277,7 @@ const onClickOutside = (event: any, item: any) => {
                 @input="handleChange"
             />
         </div>
-        
+
         <div class="content__list-message overflow-auto flex-1 p-1.5" id="scroll__list-message">
             <div v-for="item in dataCopy"
                  :key="item.id"
@@ -260,19 +286,20 @@ const onClickOutside = (event: any, item: any) => {
                  v-click-outside="($event) => onClickOutside($event, item)"
                  @click="handleClickItem(item.id)"
             >
-                <el-badge is-dot class="dot-badge mr-4">
+                <el-badge :is-dot="item.online" class="dot-badge mr-4">
                     <el-avatar
                         :src="item.avatar"
                         :size="45"
                         class="border"
                     />
                 </el-badge>
-                
+
                 <div class="flex flex-col">
                     <p class="name__item__list-massage font-medium text-ellipsis whitespace-nowrap overflow-hidden">
                         {{ item.name }}
                     </p>
-                    <div class="font-light text-sm text-gray-500 flex items-center">
+                    <div class="font-light text-sm text-gray-500 flex items-center"
+                         :class="item.action.read ? 'font-semibold text-black' : ''">
                         <span class="message__item__list-message text-ellipsis whitespace-nowrap overflow-hidden">
                             {{ item.message }}
                         </span>
@@ -280,14 +307,22 @@ const onClickOutside = (event: any, item: any) => {
                         <span>{{ item.time }}</span>
                     </div>
                 </div>
-                
+
+                <el-icon v-if="item.action.notification"
+                         :size="22"
+                         :color="'#808080'"
+                         class="ml-4">
+                    <MuteNotification/>
+                </el-icon>
+
                 <el-popover
                     ref="popoverRef"
                     :visible="item.visibleAction"
                     placement="bottom"
                     :width="250">
-                    <more-action :action="item.action"/>
-                    
+                    <more-action :action="item.action"
+                                 @on-click-item="(key) => handleClickItemMoreAction(key, item)"/>
+
                     <template #reference>
                         <el-button
                             class="more-action flex items-center justify-center"
@@ -301,7 +336,7 @@ const onClickOutside = (event: any, item: any) => {
                 </el-popover>
             </div>
         </div>
-        
+
         <div class="cover-bar"></div>
     </div>
 </template>
@@ -319,7 +354,7 @@ const onClickOutside = (event: any, item: any) => {
         background: #f7f8f8;
         border-radius: 10px;
         -webkit-transition: background-color var(--el-transition-duration);
-        
+
         &:hover {
             box-shadow: none;
             background: #eeefef;
@@ -329,13 +364,13 @@ const onClickOutside = (event: any, item: any) => {
 
 .content__list-message {
     position: relative;
-    
+
     .item__list-message {
         cursor: pointer;
         padding: 10px 15px;
         border-radius: 10px;
         -webkit-transition: background-color var(--el-transition-duration);
-        
+
         .more-action {
             visibility: hidden;
             position: absolute;
@@ -347,49 +382,49 @@ const onClickOutside = (event: any, item: any) => {
             box-shadow: var(--el-box-shadow-light);
             -webkit-transition: all .1ms;
         }
-        
+
         &:hover {
             background-color: #f7f8f8;
-            
+
             .more-action {
                 visibility: visible;
             }
         }
-        
+
         .active__more-action {
             visibility: visible;
         }
     }
-    
+
     .dot-badge {
         .el-badge__content.is-fixed.is-dot {
             right: 10px;
         }
-        
+
         .el-badge__content.is-fixed {
             top: 7px
         }
-        
+
         .el-badge__content--danger {
             background-color: #5ad539;
         }
     }
-    
+
     .active {
         background-color: #0f2132 !important;
-        
+
         p {
             color: white;
         }
     }
-    
+
     .name__item__list-massage {
         width: 210px;
     }
-    
+
     .message__item__list-message {
         display: inline-block;
-        max-width: 161px;
+        max-width: 150px;
     }
 }
 

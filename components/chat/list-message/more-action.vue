@@ -4,48 +4,57 @@ import {Bell, Check, Delete, MuteNotification, RemoveFilled} from "@element-plus
 const props = defineProps({
     action: {
         type: Object,
-        default: {
-            read: false,
-            notification: false,
-            block: false,
+        required: true,
+        default() {
+            return {
+                read: false,
+                notification: false,
+                block: false,
+            }
         },
-        required: true
     }
 });
 
+const emits = defineEmits(["onChangeRead", "onChangeNotification", "onChangeBlock", "onDelete", "onClickItem"])
+
 const {action} = props;
 
-const sizeIcon = 25;
+const sizeIcon = 23;
+
+const handleClick = (key : string) => {
+    emits("onClickItem", key)
+}
 </script>
 
 <template>
     <div class="h-full w-full flex flex-col justify-center">
-        <div class="item__more-action flex items-center p-1">
+        <div class="item__more-action flex items-center p-1"
+             @click="handleClick('read')">
             <el-icon :size="sizeIcon" class="mr-2">
                 <Check/>
             </el-icon>
-            <span v-if="action.read">Mark as unread</span>
-            <span>Mark as read</span>
+            <span>{{ action?.read ? "Mark as unread" : "Mark as read" }}</span>
         </div>
-        
-        <div class="item__more-action flex items-center p-1">
+
+        <div class="item__more-action flex items-center p-1"
+             @click="handleClick('notification')">
             <el-icon :size="sizeIcon" class="mr-2">
-                <!--                <Bell />-->
-                <MuteNotification/>
+                <Bell v-if="action?.notification"/>
+                <MuteNotification v-else/>
             </el-icon>
-            <span>Mute notification</span>
-            <!--            <span>Unmute notification</span>-->
+            <span>{{ action?.notification ? "Mute notification" : "Unmute notification" }}</span>
         </div>
-        
-        <div class="item__more-action flex items-center p-1">
+
+        <div class="item__more-action flex items-center p-1"
+             @click="handleClick('block')">
             <el-icon :size="sizeIcon" class="mr-2">
                 <RemoveFilled/>
             </el-icon>
-            <span>Block</span>
-            <!--            <span>Unblock</span>-->
+            <span>{{ action?.block ? "Block" : "Unblock" }}</span>
         </div>
-        
-        <div class="item__more-action flex items-center p-1">
+
+        <div class="item__more-action flex items-center p-1"
+             @click="handleClick('delete')">
             <el-icon :size="sizeIcon" class="mr-2">
                 <Delete/>
             </el-icon>
@@ -58,7 +67,7 @@ const sizeIcon = 25;
 .item__more-action {
     cursor: pointer;
     -webkit-transition: background-color var(--el-transition-duration);
-    
+
     &:hover {
         background-color: #f7f8f8;
     }
