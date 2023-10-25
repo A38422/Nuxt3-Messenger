@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import {ChatDotRound, Setting, SwitchButton, TakeawayBox, User} from "@element-plus/icons-vue";
+import {ChatDotRound, RemoveFilled, Setting, SwitchButton, User} from "@element-plus/icons-vue";
 
 const route = useRoute()
 
 const active = computed<string>(() => route.path)
-const sizeIcon = ref<Number>(25)
+
+const sizeIcon = 25
 
 const srcAvatar = "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
 </script>
@@ -46,7 +47,7 @@ const srcAvatar = "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcp
                 <NuxtLink to="/blocks">
                     <el-menu-item index="/blocks">
                         <el-icon :size="sizeIcon">
-                            <TakeawayBox/>
+                            <RemoveFilled/>
                         </el-icon>
                         <template #title>
                             <span class="ml-3">Blocks</span>
