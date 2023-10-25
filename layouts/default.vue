@@ -28,7 +28,7 @@ const srcAvatar = "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcp
                             <ChatDotRound/>
                         </el-icon>
                         <template #title>
-                            <span class="ml-3">Chat</span>
+                            <span class="ml-3 font-semibold text-lg">Chat</span>
                         </template>
                     </el-menu-item>
                 </NuxtLink>
@@ -39,7 +39,7 @@ const srcAvatar = "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcp
                             <User/>
                         </el-icon>
                         <template #title>
-                            <span class="ml-3">Friends</span>
+                            <span class="ml-3 font-semibold text-lg">Friends</span>
                         </template>
                     </el-menu-item>
                 </NuxtLink>
@@ -50,7 +50,7 @@ const srcAvatar = "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcp
                             <RemoveFilled/>
                         </el-icon>
                         <template #title>
-                            <span class="ml-3">Blocks</span>
+                            <span class="ml-3 font-semibold text-lg">Blocks</span>
                         </template>
                     </el-menu-item>
                 </NuxtLink>
@@ -61,7 +61,7 @@ const srcAvatar = "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcp
                             <Setting/>
                         </el-icon>
                         <template #title>
-                            <span class="ml-3">Setting</span>
+                            <span class="ml-3 font-semibold text-lg">Setting</span>
                         </template>
                     </el-menu-item>
                 </NuxtLink>
@@ -75,7 +75,7 @@ const srcAvatar = "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcp
                             :size="40"
                             class="border"
                         />
-                        <span class="ml-3">Minh</span>
+                        <span class="ml-3 font-semibold text-lg">Minh</span>
                     </div>
                     
                     <el-icon :size="sizeIcon">
