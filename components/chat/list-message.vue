@@ -2,6 +2,7 @@
 
 import {CirclePlus, MoreFilled, Search, VideoCamera} from "@element-plus/icons-vue";
 import {ClickOutside as vClickOutside} from 'element-plus'
+import MoreAction from "~/components/chat/list-message/more-action.vue";
 
 const sizeIcon = 25;
 const data = [
@@ -12,6 +13,11 @@ const data = [
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
         visibleAction: false,
+        action: {
+            read: false,
+            notification: false,
+            block: false,
+        }
     },
     {
         id: 1,
@@ -20,6 +26,11 @@ const data = [
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
         visibleAction: false,
+        action: {
+            read: false,
+            notification: false,
+            block: false,
+        }
     },
     {
         id: 2,
@@ -28,6 +39,11 @@ const data = [
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
         visibleAction: false,
+        action: {
+            read: false,
+            notification: false,
+            block: false,
+        }
     },
     {
         id: 3,
@@ -36,6 +52,11 @@ const data = [
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
         visibleAction: false,
+        action: {
+            read: false,
+            notification: false,
+            block: false,
+        }
     },
     {
         id: 4,
@@ -44,6 +65,11 @@ const data = [
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
         visibleAction: false,
+        action: {
+            read: false,
+            notification: false,
+            block: false,
+        }
     },
     {
         id: 5,
@@ -52,6 +78,11 @@ const data = [
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
         visibleAction: false,
+        action: {
+            read: false,
+            notification: false,
+            block: false,
+        }
     },
     {
         id: 6,
@@ -60,6 +91,11 @@ const data = [
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
         visibleAction: false,
+        action: {
+            read: false,
+            notification: false,
+            block: false,
+        }
     },
     {
         id: 7,
@@ -68,6 +104,11 @@ const data = [
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
         visibleAction: false,
+        action: {
+            read: false,
+            notification: false,
+            block: false,
+        }
     },
     {
         id: 8,
@@ -76,6 +117,11 @@ const data = [
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
         visibleAction: false,
+        action: {
+            read: false,
+            notification: false,
+            block: false,
+        }
     },
     {
         id: 9,
@@ -84,6 +130,11 @@ const data = [
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
         visibleAction: false,
+        action: {
+            read: false,
+            notification: false,
+            block: false,
+        }
     },
     {
         id: 10,
@@ -92,6 +143,11 @@ const data = [
         message: "YOU: Okay, Let's get the at the moment af af asf fafa faf afasfasfas faf ",
         time: "1 min ago",
         visibleAction: false,
+        action: {
+            read: false,
+            notification: false,
+            block: false,
+        }
     },
     {
         id: 11,
@@ -100,6 +156,11 @@ const data = [
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
         visibleAction: false,
+        action: {
+            read: false,
+            notification: false,
+            block: false,
+        }
     },
     {
         id: 12,
@@ -108,6 +169,11 @@ const data = [
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
         visibleAction: false,
+        action: {
+            read: false,
+            notification: false,
+            block: false,
+        }
     },
     {
         id: 13,
@@ -116,6 +182,11 @@ const data = [
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
         visibleAction: false,
+        action: {
+            read: false,
+            notification: false,
+            block: false,
+        }
     },
     {
         id: 14,
@@ -124,6 +195,11 @@ const data = [
         message: "YOU: Okay, Let's get the...",
         time: "1 min ago",
         visibleAction: false,
+        action: {
+            read: false,
+            notification: false,
+            block: false,
+        }
     },
 ]
 
@@ -140,11 +216,11 @@ const handleClickItem = (value: number) => {
     isActive.value = value;
 };
 
-const handleClickMoreAction = (item : any) => {
+const handleClickMoreAction = (item: any) => {
     item.visibleAction = !item.visibleAction;
 };
 
-const onClickOutside = (event : any, item : any) => {
+const onClickOutside = (event: any, item: any) => {
     item.visibleAction = false;
 };
 
@@ -193,7 +269,7 @@ const onClickOutside = (event : any, item : any) => {
                 </el-badge>
                 
                 <div class="flex flex-col">
-                    <p class="font-medium name__item__list-massage text-ellipsis whitespace-nowrap overflow-hidden">
+                    <p class="name__item__list-massage font-medium text-ellipsis whitespace-nowrap overflow-hidden">
                         {{ item.name }}
                     </p>
                     <div class="font-light text-sm text-gray-500 flex items-center">
@@ -209,15 +285,8 @@ const onClickOutside = (event : any, item : any) => {
                     ref="popoverRef"
                     :visible="item.visibleAction"
                     placement="bottom"
-                    :width="160">
-                    <p>Are you sure to delete this?</p>
-                    <div style="text-align: right; margin: 0">
-                        <el-button size="small" text @click="item.visibleAction = false">cancel</el-button>
-                        <el-button size="small" type="primary" @click="item.visibleAction = false"
-                        >
-                            confirm
-                        </el-button>
-                    </div>
+                    :width="250">
+                    <more-action :action="item.action"/>
                     
                     <template #reference>
                         <el-button
@@ -276,6 +345,7 @@ const onClickOutside = (event : any, item : any) => {
             border-radius: 50%;
             right: 20px;
             box-shadow: var(--el-box-shadow-light);
+            -webkit-transition: all .1ms;
         }
         
         &:hover {
@@ -326,17 +396,20 @@ const onClickOutside = (event : any, item : any) => {
 #scroll__list-message::-webkit-scrollbar {
     width: .4em;
 }
+
 #scroll__list-message::-webkit-scrollbar,
 #scroll__list-message::-webkit-scrollbar-thumb {
-    overflow:visible;
+    overflow: visible;
     border-radius: 4px;
 }
+
 #scroll__list-message::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,.2);
+    background: rgba(0, 0, 0, .2);
 }
+
 .cover-bar {
     position: absolute;
-    background: #fff;;
+    background: #ffffff;;
     height: 100%;
     top: 0;
     right: 0;
@@ -344,6 +417,7 @@ const onClickOutside = (event : any, item : any) => {
     -webkit-transition: all .5s;
     opacity: 1;
 }
+
 /* MAGIC HAPPENS HERE */
 .container__list-message:hover .cover-bar {
     opacity: 0;
