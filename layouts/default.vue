@@ -2,7 +2,7 @@
 import {ChatDotRound, RemoveFilled, Setting, SwitchButton} from "@element-plus/icons-vue";
 
 const route = useRoute();
-const { user, isLogin, signOut, signIn } = useAuth();
+const { user, signOut, signIn } = useAuth();
 
 const active = computed<string>(() => route.path);
 
@@ -66,15 +66,15 @@ const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-p
             </el-menu>
             
             <div class="item-menu__logout">
-                <div v-if="isLogin" class="flex items-center justify-between" @click="signOut">
+                <div v-if="user" class="flex items-center justify-between" @click="signOut">
                     <div class="flex items-center">
                         <el-avatar
-                            :src="user.photoURL"
+                            :src="user.photoUrl"
                             :size="40"
                             class="border"
                             fit="cover"
                         />
-                        <span class="ml-3 font-semibold text-lg">{{user.displayName}}</span>
+                        <span class="ml-3 font-semibold text-lg">{{user.userName}}</span>
                     </div>
 
                     <el-icon :size="sizeIcon">
