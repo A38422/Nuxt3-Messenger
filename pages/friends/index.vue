@@ -1,11 +1,10 @@
 <script setup lang="ts">
 
+import Friends from "@/components/friends/friends.vue";
 </script>
 
 <template>
-    <div>
-        friends
-    </div>
+    <friends />
 </template>
 
 <style scoped lang="scss">

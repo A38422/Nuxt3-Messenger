@@ -14,11 +14,12 @@ const data = ref({
         block: true,
     }
 });
-const {user, isLogin} = useAuth();
+const {user} = useAuth();
 const {getMessagesInChat, sendMessage} = useChat();
 const bottom = ref(null);
 const messages = ref([]);
-const message = ref(getMessagesInChat("111"));
+
+// getMessagesInChat("111").then(r => messages.value = r);
 
 onMounted(() => {
     // @ts-ignore
@@ -37,17 +38,17 @@ watch(
 )
 
 const send = (value: String) => {
-    sendMessage("111", value);
+    // sendMessage("111", value);
 };
 </script>
 
 <template>
-    <section v-if="isLogin" class="chat-container overflow-hidden h-full w-full flex flex-col">
+    <section v-if="user" class="chat-container overflow-hidden h-full w-full flex flex-col">
         <div class="chat-header px-6 py-4 flex flex-row justify-between items-center border-b-2 border-b-gray-100">
             <ChatConversationHeader :active="data.active" :avatar="data.avatar" :name="data.name"/>
         </div>
 
-        <div v-if="message && message.length > 0" class="chat-body p-4 flex-1 overflow-auto h-full">
+        <div v-if="messages && messages.length > 0" class="chat-body p-4 flex-1 overflow-auto h-full">
             <ChatConversationMessage
                 v-for="{ id, text, userPhotoURL, userName, userId } in messages"
                 :key="id"
