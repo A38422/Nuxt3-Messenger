@@ -18,7 +18,7 @@
             <ChatConversation/>
         </el-col>
         
-        <el-col :span="6">
+        <el-col :span="6" class="h-full w-full">
             <ChatOtherAction/>
         </el-col>
     </el-row>
