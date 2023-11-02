@@ -3,9 +3,9 @@
 </script>
 
 <template>
-    <div>
+    <el-empty>
         <slot/>
-    </div>
+    </el-empty>
 </template>
 
 <style scoped lang="scss">

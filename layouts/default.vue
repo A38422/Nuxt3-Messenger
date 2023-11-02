@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import {ChatDotRound, RemoveFilled, Setting, SwitchButton, User} from "@element-plus/icons-vue";
+import {ChatDotRound, RemoveFilled, Setting, SwitchButton} from "@element-plus/icons-vue";
 
-const route = useRoute()
+const route = useRoute();
+const { user, isLogin, signOut, signIn } = useAuth();
 
-const active = computed<string>(() => route.path)
+const active = computed<string>(() => route.path);
 
-const sizeIcon = 25
-
-const srcAvatar = "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+const sizeIcon = 25;
+const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 </script>
 
 <template>
@@ -35,9 +35,7 @@ const srcAvatar = "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcp
                 
                 <NuxtLink to="/friends">
                     <el-menu-item index="/friends">
-                        <el-icon :size="sizeIcon">
-                            <User/>
-                        </el-icon>
+                        <svg-icons name="icon-friends" :size="sizeIcon" class="mr-1"/>
                         <template #title>
                             <span class="ml-3 font-semibold text-lg">Friends</span>
                         </template>
@@ -68,19 +66,31 @@ const srcAvatar = "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcp
             </el-menu>
             
             <div class="item-menu__logout">
-                <div class="flex items-center justify-between">
+                <div v-if="isLogin" class="flex items-center justify-between" @click="signOut">
                     <div class="flex items-center">
                         <el-avatar
-                            :src="srcAvatar"
+                            :src="user.photoURL"
                             :size="40"
                             class="border"
+                            fit="cover"
                         />
-                        <span class="ml-3 font-semibold text-lg">Minh</span>
+                        <span class="ml-3 font-semibold text-lg">{{user.displayName}}</span>
                     </div>
-                    
+
                     <el-icon :size="sizeIcon">
                         <SwitchButton/>
                     </el-icon>
+                </div>
+                <div v-else class="flex items-center justify-between" @click="signIn">
+                    <div class="flex items-center">
+                        <el-avatar
+                            :src="noAvatar"
+                            :size="40"
+                            class="border"
+                            fit="cover"
+                        />
+                        <span class="ml-3 font-semibold text-lg">Sign In</span>
+                    </div>
                 </div>
             </div>
         </el-aside>
