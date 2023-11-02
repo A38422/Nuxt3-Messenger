@@ -1,0 +1,87 @@
+    <!--    <p class="p-4 text-center text-sm text-gray-500">FRI 3:04 PM</p>-->
+
+    <!--    <div class="flex flex-row justify-end">-->
+    <!--        <div class="messages text-sm text-white grid grid-flow-row gap-0.5">-->
+    <!--            <div class="flex items-center flex-row-reverse group">-->
+    <!--                <p class="px-6 py-3 rounded-t-3xl rounded-l-3xl bg-blue-500 max-w-xs lg:max-w-md">Hey! How-->
+    <!--                    are-->
+    <!--                    you?</p>-->
+    <!--            </div>-->
+    <!--            <div class="flex items-center flex-row-reverse group">-->
+    <!--                <p class="px-6 py-3 rounded-l-3xl bg-blue-500 max-w-xs lg:max-w-md">Shall we go for Hiking-->
+    <!--                    this-->
+    <!--                    weekend?</p>-->
+    <!--            </div>-->
+    <!--            <div class="flex items-center flex-row-reverse group">-->
+    <!--                <p class="px-6 py-3 rounded-b-3xl rounded-l-3xl bg-blue-500 max-w-xs lg:max-w-md">Lorem-->
+    <!--                    ipsum-->
+    <!--                    dolor sit-->
+    <!--                    amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et-->
+    <!--                    dolore magna aliqua. Volutpat lacus laoreet non curabitur gravida.</p>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--    </div>-->
+
+    <!--    <p class="p-4 text-center text-sm text-gray-500">SAT 2:10 PM</p>-->
+
+    <!--    <div class="flex flex-row justify-start">-->
+    <!--        <el-avatar-->
+    <!--            :src="data.avatar"-->
+    <!--            :size="35"-->
+    <!--            class="border mr-4"-->
+    <!--        />-->
+
+    <!--        <div class="messages text-sm text-gray-700 grid grid-flow-row gap-0.5">-->
+    <!--            <div class="flex items-center group">-->
+    <!--                <p class="px-6 py-3 rounded-t-3xl rounded-r-3xl bg-gray-100 max-w-xs lg:max-w-md">Hey! How-->
+    <!--                    are-->
+    <!--                    you?</p>-->
+
+    <!--            </div>-->
+    <!--            <div class="flex items-center group">-->
+    <!--                <p class="px-6 py-3 rounded-r-3xl bg-gray-100 max-w-xs lg:max-w-md">Shall we go for Hiking-->
+    <!--                    this-->
+    <!--                    weekend?</p>-->
+
+    <!--            </div>-->
+    <!--            <div class="flex items-center group">-->
+    <!--                <p class="px-6 py-3 rounded-b-3xl rounded-r-3xl bg-gray-100 max-w-xs lg:max-w-md">Lorem-->
+    <!--                    ipsum-->
+    <!--                    dolor sit-->
+    <!--                    amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et-->
+    <!--                    dolore magna aliqua. Volutpat lacus laoreet non curabitur gravida.</p>-->
+
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--    </div>-->
+
+    <!--    <p class="p-4 text-center text-sm text-gray-500">12:40 PM</p>-->
+
+    <!--    <div class="flex flex-row justify-end">-->
+    <!--        <div class="messages text-sm text-white grid grid-flow-row gap-0.5">-->
+    <!--            <div class="flex items-center flex-row-reverse group">-->
+    <!--                <p class="px-6 py-3 rounded-t-3xl rounded-l-3xl bg-blue-500 max-w-xs lg:max-w-md">Hey! How-->
+    <!--                    are-->
+    <!--                    you?</p>-->
+    <!--            </div>-->
+    <!--            <div class="flex items-center flex-row-reverse group">-->
+    <!--                <p class="px-6 py-3 rounded-l-3xl bg-blue-500 max-w-xs lg:max-w-md">Shall we go for Hiking-->
+    <!--                    this-->
+    <!--                    weekend?</p>-->
+    <!--            </div>-->
+    <!--            <div class="flex items-center flex-row-reverse group">-->
+    <!--                <a class="block w-64 h-64 relative flex flex-shrink-0 max-w-xs lg:max-w-md" href="#">-->
+    <!--                    <img class="absolute shadow-md w-full h-full rounded-l-lg object-cover"-->
+    <!--                         src="https://unsplash.com/photos/8&#45;&#45;kuxbxuKU/download?force=true&w=640"-->
+    <!--                         alt="hiking"/>-->
+    <!--                </a>-->
+    <!--            </div>-->
+    <!--            <div class="flex items-center flex-row-reverse group">-->
+    <!--                <p class="px-6 p-3 rounded-b-3xl rounded-l-3xl bg-blue-500 max-w-xs lg:max-w-md">Lorem-->
+    <!--                    ipsum-->
+    <!--                    dolor sit-->
+    <!--                    amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et-->
+    <!--                    dolore magna aliqua. Volutpat lacus laoreet non curabitur gravida.</p>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--    </div>-->

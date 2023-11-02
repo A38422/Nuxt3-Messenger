@@ -1,0 +1,116 @@
+.header__list-message {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.input-search__list-message {
+  .el-input__wrapper {
+    box-shadow: none;
+    background: #f7f8f8;
+    border-radius: 10px;
+    -webkit-transition: background-color var(--el-transition-duration);
+
+    &:hover {
+      box-shadow: none;
+      background: #eeefef;
+    }
+  }
+}
+
+.content__list-message {
+  position: relative;
+
+  .item__list-message {
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 10px;
+    -webkit-transition: background-color var(--el-transition-duration);
+
+    .more-action {
+      visibility: hidden;
+      position: absolute;
+      background-color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      right: 20px;
+      box-shadow: var(--el-box-shadow-light);
+      -webkit-transition: all .1ms;
+    }
+
+    &:hover {
+      background-color: #f7f8f8;
+
+      .more-action {
+        visibility: visible;
+      }
+    }
+
+    .active__more-action {
+      visibility: visible;
+    }
+  }
+
+  .dot-badge {
+    .el-badge__content.is-fixed.is-dot {
+      right: 10px;
+    }
+
+    .el-badge__content.is-fixed {
+      top: 7px
+    }
+
+    .el-badge__content--danger {
+      background-color: #5ad539;
+    }
+  }
+
+  .active {
+    background-color: #0f2132 !important;
+
+    p {
+      color: white;
+    }
+  }
+
+  .name__item__list-massage {
+    width: 210px;
+  }
+
+  .message__item__list-message {
+    display: inline-block;
+    max-width: 150px;
+  }
+}
+
+#scroll__list-message::-webkit-scrollbar {
+  width: .4em;
+}
+
+#scroll__list-message::-webkit-scrollbar,
+#scroll__list-message::-webkit-scrollbar-thumb {
+  overflow: visible;
+  border-radius: 4px;
+}
+
+#scroll__list-message::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, .2);
+}
+
+.cover-bar {
+  position: absolute;
+  background: #ffffff;;
+  height: 100%;
+  top: 0;
+  right: 0;
+  width: .4em;
+  -webkit-transition: all .5s;
+  opacity: 1;
+}
+
+/* MAGIC HAPPENS HERE */
+.container__list-message:hover .cover-bar {
+  opacity: 0;
+  -webkit-transition: all .3s;
+}

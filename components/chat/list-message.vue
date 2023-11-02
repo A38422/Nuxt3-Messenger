@@ -1,10 +1,7 @@
 <script setup lang="ts">
-
 import _ from "lodash"
-import {CirclePlus, MoreFilled, MuteNotification, Search, VideoCamera} from "@element-plus/icons-vue";
-import {ClickOutside as vClickOutside} from 'element-plus'
-import MoreAction from "~/components/chat/list-message/more-action.vue";
-
+import {CirclePlus, Search, VideoCamera} from "@element-plus/icons-vue";
+import CardMessage from "@/components/chat/list-message/card-message.vue";
 
 const sizeIcon = 25;
 const data = [
@@ -223,7 +220,6 @@ const data = [
 const dataCopy = ref(data);
 const valueInput = ref("");
 const isActive = ref(0);
-const popoverRef = ref();
 
 const handleChange = (value: any) => {
     dataCopy.value = data.filter(item => item.name.toLowerCase().includes(value.toLowerCase()))
@@ -237,18 +233,18 @@ const handleClickMoreAction = (item: any) => {
     item.visibleAction = !item.visibleAction;
 };
 
-const onClickOutside = (event: any, item: any) => {
+const onClickOutside = (item: any) => {
     item.visibleAction = false;
 };
 
-const handleClickItemMoreAction = _.debounce((key: string, item: any) => {
+const handleClickItemMoreAction = _.debounce((key: any, item: any) => {
     if (key === "delete") {
         dataCopy.value = dataCopy.value.filter(i => i.id !== item.id);
         return;
     }
 
     item.action[key] = !item.action[key];
-}, 200)
+}, 200);
 
 </script>
 
@@ -278,184 +274,28 @@ const handleClickItemMoreAction = _.debounce((key: string, item: any) => {
             />
         </div>
 
-        <div class="content__list-message overflow-auto flex-1 p-1.5" id="scroll__list-message">
-            <div v-for="item in dataCopy"
-                 :key="item.id"
-                 class="item__list-message flex items-center"
-                 :class="isActive === item.id ? 'active' : ''"
-                 v-click-outside="($event) => onClickOutside($event, item)"
-                 @click="handleClickItem(item.id)"
-            >
-                <el-badge :is-dot="item.online" class="dot-badge mr-4">
-                    <el-avatar
-                        :src="item.avatar"
-                        :size="45"
-                        class="border"
-                    />
-                </el-badge>
-
-                <div class="flex flex-col">
-                    <p class="name__item__list-massage font-medium text-ellipsis whitespace-nowrap overflow-hidden">
-                        {{ item.name }}
-                    </p>
-                    <div class="font-light text-sm text-gray-500 flex items-center"
-                         :class="item.action.read ? 'font-semibold text-black' : ''">
-                        <span class="message__item__list-message text-ellipsis whitespace-nowrap overflow-hidden">
-                            {{ item.message }}
-                        </span>
-                        <span class="mx-1"> • </span>
-                        <span>{{ item.time }}</span>
-                    </div>
-                </div>
-
-                <el-icon v-if="item.action.notification"
-                         :size="22"
-                         :color="'#808080'"
-                         class="ml-4">
-                    <MuteNotification/>
-                </el-icon>
-
-                <el-popover
-                    ref="popoverRef"
-                    :visible="item.visibleAction"
-                    placement="bottom"
-                    :width="250">
-                    <more-action :action="item.action"
-                                 @on-click-item="(key) => handleClickItemMoreAction(key, item)"/>
-
-                    <template #reference>
-                        <el-button
-                            class="more-action flex items-center justify-center"
-                            :class="item.visibleAction ? 'active__more-action' : ''"
-                            @click.stop="handleClickMoreAction(item)">
-                            <el-icon :size="14">
-                                <MoreFilled/>
-                            </el-icon>
-                        </el-button>
-                    </template>
-                </el-popover>
-            </div>
+        <div class="content__list-message overflow-auto flex-1 p-1.5"
+             id="scroll__list-message">
+            <card-message v-for="item in dataCopy"
+                          :class="isActive === item.id ? 'active' : ''"
+                          :id="item.id"
+                          :key="item.id"
+                          :name="item.name"
+                          :time="item.time"
+                          :online="item.online"
+                          :avatar="item.avatar"
+                          :action="item.action"
+                          :visible-action="item.visibleAction"
+                          @click="handleClickItem(item.id)"
+                          @on-click-outside="onClickOutside(item)"
+                          @on-click-more-action="handleClickMoreAction(item)"
+                          @on-click-item-more-action="(key) => handleClickItemMoreAction(key, item)">
+                {{ item.message }}
+            </card-message>
         </div>
 
         <div class="cover-bar"></div>
     </div>
 </template>
 
-<style lang="scss">
-.header__list-message {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.input-search__list-message {
-    .el-input__wrapper {
-        box-shadow: none;
-        background: #f7f8f8;
-        border-radius: 10px;
-        -webkit-transition: background-color var(--el-transition-duration);
-
-        &:hover {
-            box-shadow: none;
-            background: #eeefef;
-        }
-    }
-}
-
-.content__list-message {
-    position: relative;
-
-    .item__list-message {
-        cursor: pointer;
-        padding: 10px 15px;
-        border-radius: 10px;
-        -webkit-transition: background-color var(--el-transition-duration);
-
-        .more-action {
-            visibility: hidden;
-            position: absolute;
-            background-color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            right: 20px;
-            box-shadow: var(--el-box-shadow-light);
-            -webkit-transition: all .1ms;
-        }
-
-        &:hover {
-            background-color: #f7f8f8;
-
-            .more-action {
-                visibility: visible;
-            }
-        }
-
-        .active__more-action {
-            visibility: visible;
-        }
-    }
-
-    .dot-badge {
-        .el-badge__content.is-fixed.is-dot {
-            right: 10px;
-        }
-
-        .el-badge__content.is-fixed {
-            top: 7px
-        }
-
-        .el-badge__content--danger {
-            background-color: #5ad539;
-        }
-    }
-
-    .active {
-        background-color: #0f2132 !important;
-
-        p {
-            color: white;
-        }
-    }
-
-    .name__item__list-massage {
-        width: 210px;
-    }
-
-    .message__item__list-message {
-        display: inline-block;
-        max-width: 150px;
-    }
-}
-
-#scroll__list-message::-webkit-scrollbar {
-    width: .4em;
-}
-
-#scroll__list-message::-webkit-scrollbar,
-#scroll__list-message::-webkit-scrollbar-thumb {
-    overflow: visible;
-    border-radius: 4px;
-}
-
-#scroll__list-message::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, .2);
-}
-
-.cover-bar {
-    position: absolute;
-    background: #ffffff;;
-    height: 100%;
-    top: 0;
-    right: 0;
-    width: .4em;
-    -webkit-transition: all .5s;
-    opacity: 1;
-}
-
-/* MAGIC HAPPENS HERE */
-.container__list-message:hover .cover-bar {
-    opacity: 0;
-    -webkit-transition: all .3s;
-}
-</style>
+<style lang="scss" src="@/assets/chat/list-message.scss"/>
