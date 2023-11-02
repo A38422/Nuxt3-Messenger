@@ -41,33 +41,71 @@ const data = ref({
             </p>
         </div>
     </div>
-    <div class="flex flex-row justify-center items-center space-x-8 mt-2 ">
+    <div class="flex flex-row justify-center items-center space-x-6 mt-2 mr-2 ">
+        <div class="flex flex-col justify-center items-center text-center">
         <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center cursor-pointer hover:bg-gray-500" >
             <svg-icons name="icon-profile" size="20" color="#000000"/>
         </span>
+            Thông tin <br>cá nhân
+        </div>
+        <div class="flex flex-col justify-center items-center text-center">
         <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center cursor-pointer hover:bg-gray-500" >
             <svg-icons name="icon-bell" size="20" color="#ffffff"/>
         </span>
+            Tắt thông <br> báo
+        </div>
+        <div class="flex flex-col justify-center items-center mb-6">
         <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center cursor-pointer hover:bg-gray-500" >
             <svg-icons name="icon-search" size="20" color="#ffffff"/>
         </span>
+            Tìm kiếm <br>
+        </div>
     </div>
 
-    <div class="demo-collapse">
-        <el-collapse v-model="activeNames" @change="handleChange">
+    <div class="demo-collapse ml-9 ">
+        <el-collapse>
             <el-collapse-item title="Thông tin đoạn chat" name="1">
-                <div>
-
+                <div class="flex flex-row items-center cursor-pointer">
+                    <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center " >
+                        <svg-icons name="icon-pin1" size="25" color="#000000"/>
+                    </span>
+                    <div class="mb-1 ml-2 ">
+                    Xem tin nhắn đã ghim
+                    </div>
                 </div>
             </el-collapse-item>
-            <el-collapse-item title="Feedback" name="2">
-                <div>
-                    Operation feedback: enable the users to clearly perceive their
-                    operations by style updates and interactive effects;
+            <el-collapse-item title="Tuỳ chỉnh đoạn chat" name="2">
+                <div class="flex flex-row items-center cursor-pointer mb-2">
+                    <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center " style="margin-bottom: -1px" >
+                        <svg-icons name="icon-ring" size="25" color="#000000"/>
+                    </span>
+                    <div class="mb-1 ml-2 flex-1">
+                        Đổi chủ đề
+                    </div>
                 </div>
-                <div>
-                    Visual feedback: reflect current state by updating or rearranging
-                    elements of the page.
+                <div class="flex flex-row items-center cursor-pointer mb-2">
+                    <div class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center " >
+                        <svg-icons name="icon-like2" size="20"/>
+                    </div>
+                    <div class="mb-1 ml-2 flex-1">
+                        Thay đổi biểu tượng cảm xúc
+                    </div>
+                </div>
+                <div class="flex flex-row items-center cursor-pointer mb-2">
+                    <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center" style="margin-bottom: 0" >
+                        <svg-icons name="icon-Aa" size="20" color="#000000"/>
+                    </span>
+                    <div class="mb-1 ml-2 flex-1">
+                        Chỉnh sửa biêt danh
+                    </div>
+                </div>
+                <div class="flex flex-row items-center cursor-pointer">
+                    <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center"  style="margin-bottom: -2px" >
+                        <svg-icons name="icon-search" size="20" color="#ffffff" />
+                    </span>
+                    <div class="mb-1 ml-2 flex-1">
+                        Tìm kiếm trong cuộc trò chuyện
+                    </div>
                 </div>
             </el-collapse-item>
             <el-collapse-item title="Efficiency" name="3">
@@ -99,6 +137,17 @@ const data = ref({
 
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
+.demo-collapse {
+    .el-collapse{
+        border: none;
 
+        .el-collapse-item__header {
+            border: none;
+        }
+        .el-collapse-item__wrap{
+            border: none;
+        }
+    }
+}
 </style>

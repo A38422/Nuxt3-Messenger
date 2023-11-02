@@ -17,8 +17,6 @@ const props = defineProps({
 
 const emits = defineEmits(["onChangeRead", "onChangeNotification", "onChangeBlock", "onDelete", "onClickItem"])
 
-const {action} = props;
-
 const sizeIcon = 23;
 
 const handleClick = (key : string) => {
