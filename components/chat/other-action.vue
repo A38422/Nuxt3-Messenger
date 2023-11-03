@@ -108,28 +108,70 @@ const data = ref({
                     </div>
                 </div>
             </el-collapse-item>
-            <el-collapse-item title="Efficiency" name="3">
-                <div>
-                    Simplify the process: keep operating process simple and intuitive;
+            <el-collapse-item title="File phương tiện, file và liên kết" name="3">
+                <div class="flex flex-row items-center cursor-pointer mb-2">
+                    <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center " style="margin-bottom: -1px" >
+                        <svg-icons name="icon-LPhoto" size="25" color="#000000"/>
+                    </span>
+                    <div class="mb-1 ml-2 flex-1">
+                        File phương tiện
+                    </div>
                 </div>
-                <div>
-                    Definite and clear: enunciate your intentions clearly so that the
-                    users can quickly understand and make decisions;
+                <div class="flex flex-row items-center cursor-pointer mb-2">
+                    <div class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center " >
+                        <svg-icons name="icon-File1" size="20" color="#ffffff"/>
+                    </div>
+                    <div class="mb-1 ml-2 flex-1">
+                        File
+                    </div>
                 </div>
-                <div>
-                    Easy to identify: the interface should be straightforward, which helps
-                    the users to identify and frees them from memorizing and recalling.
+                <div class="flex flex-row items-center cursor-pointer mb-2">
+                    <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center" style="margin-bottom: 0" >
+                        <svg-icons name="icon-Link" size="20" color="#ffffff"/>
+                    </span>
+                    <div class="mb-1 ml-2 flex-1">
+                        Liên kết
+                    </div>
                 </div>
             </el-collapse-item>
-            <el-collapse-item title="Controllability" name="4">
-                <div>
-                    Decision making: giving advices about operations is acceptable, but do
-                    not make decisions for the users;
+
+            <el-collapse-item title="Quyền riêng tư và hỗ trợ" name="4">
+                <div class="flex flex-row items-center cursor-pointer mb-2">
+                    <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center " style="margin-bottom: -1px" >
+                        <svg-icons name="icon-NonNofi" size="25" color="none"/>
+                    </span>
+                    <div class="mb-1 ml-2 flex-1">
+                        Tắt thông báo
+                    </div>
                 </div>
-                <div>
-                    Controlled consequences: users should be granted the freedom to
-                    operate, including canceling, aborting or terminating current
-                    operation.
+                <div class="flex flex-row items-center cursor-pointer mb-2">
+                    <div class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center " >
+                        <svg-icons name="icon-BlockChat" size="20"/>
+                    </div>
+                    <div class="mb-1 ml-2 flex-1">
+                        Hạn chế
+                    </div>
+                </div>
+                <div class="flex flex-row items-center cursor-pointer mb-2">
+                    <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center" style="margin-bottom: 0" >
+                        <svg-icons name="icon-userBlock" size="15" color="#000000"/>
+                    </span>
+                    <div class="mb-1 ml-2 flex-1">
+                        Chặn
+                    </div>
+                </div>
+                <div class="flex flex-row items-center cursor-pointer">
+                    <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center"  style="margin-bottom: -2px" >
+                        <svg-icons name="icon-Report" size="20" color="#ffffff" />
+                    </span>
+                    <div class="mb-1 ml-2 flex-1">
+                        <div>
+                            Báo cáo
+                        </div>
+                        <div style="font-size: 10px">
+                            Đóng góp ý kiến và báo cáo cuộc trò chuyện
+                        </div>
+                    </div>
                 </div>
             </el-collapse-item>
         </el-collapse>
@@ -147,6 +189,9 @@ const data = ref({
         }
         .el-collapse-item__wrap{
             border: none;
+        }
+        .el-collapse-item__content{
+            padding-bottom: 0;
         }
     }
 }
