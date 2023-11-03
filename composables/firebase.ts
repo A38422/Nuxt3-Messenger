@@ -27,14 +27,16 @@ import Filter from "bad-words";
 import {useAuthStore} from '@/stores/auth'
 import {useChatStore} from "~/stores/chat";
 
+const runtimeConfig = useRuntimeConfig()
+
 const app = initializeApp({
-    apiKey: "AIzaSyCZigN06suPXsElTYF3WjDeZbm27vf16ig",
-    authDomain: "nuxt3-messenger.firebaseapp.com",
-    projectId: "nuxt3-messenger",
-    storageBucket: "nuxt3-messenger.appspot.com",
-    messagingSenderId: "727359037732",
-    appId: "1:727359037732:web:04e2cbbad7ad73701353b1",
-    measurementId: "G-0QBTGPG6EJ"
+    apiKey: runtimeConfig.public.apiKey,
+    authDomain: runtimeConfig.public.authDomain,
+    projectId: runtimeConfig.public.projectId,
+    storageBucket: runtimeConfig.public.storageBucket,
+    messagingSenderId: runtimeConfig.public.messagingSenderId,
+    appId: runtimeConfig.public.appId,
+    measurementId: runtimeConfig.public.measurementId
 });
 
 const auth = getAuth();
@@ -365,6 +367,7 @@ export const useChat = () => {
                     id: i.id,
                 }
             }).filter(o => {
+                // @ts-ignore
                 return o?.participant.userID === user.value.userID || o?.userID === user.value.userID;
             });
 
