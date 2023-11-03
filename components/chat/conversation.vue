@@ -1,25 +1,18 @@
 <script setup lang="ts">
-const data = ref({
-    id: 0,
-    name: "Ricky Smith",
-    avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
-    message: "YOU: Okay, Let's get the...",
-    time: "1 min ago",
-    online: false,
-    active: "Active 1h ago",
-    visibleAction: false,
-    action: {
-        read: false,
-        notification: true,
-        block: true,
-    }
-});
-const {user} = useAuth();
-const {getMessagesInChat, sendMessage} = useChat();
-const bottom = ref(null);
-const messages = ref([]);
 
-// getMessagesInChat("111").then(r => messages.value = r);
+import {useChatStore} from "@/stores/chat";
+
+const route = useRoute();
+const {user} = useAuth();
+const chatStore = useChatStore();
+const {getMessagesInChat, sendMessage} = useChat();
+
+const chats = computed<any>(() => chatStore.chats);
+const messages = computed<any>(() => chatStore.messages);
+
+const friend = ref(null);
+const bottom = ref(null);
+const chatId = ref<any>(null);
 
 onMounted(() => {
     // @ts-ignore
@@ -37,26 +30,48 @@ watch(
     {deep: true}
 )
 
+watch(() => route.query.chatId,
+    async newId => {
+        if (newId) {
+            chatId.value = newId;
+            await getMessagesInChat(newId);
+            if (chats.value.find((i: any) => i.id === newId)) {
+                friend.value = chats.value.find((i: any) => i.id === newId).participant
+            }
+        }
+    }, {immediate: true}
+)
+
+watch(chats, async newChats => {
+    await getMessagesInChat(chatId.value);
+    if (newChats.find((i: any) => i.id === chatId.value)) {
+        friend.value = newChats.find((i: any) => i.id === chatId.value).participant
+    }
+}, {deep: true});
+
 const send = (value: String) => {
-    // sendMessage("111", value);
+    if (route.query && route.query.chatId) {
+        sendMessage(route.query.chatId, value);
+    }
 };
 </script>
 
 <template>
-    <section v-if="user" class="chat-container overflow-hidden h-full w-full flex flex-col">
+    <section v-if="user && friend" class="chat-container overflow-hidden h-full w-full flex flex-col">
         <div class="chat-header px-6 py-4 flex flex-row justify-between items-center border-b-2 border-b-gray-100">
-            <ChatConversationHeader :active="data.active" :avatar="data.avatar" :name="data.name"/>
+            <ChatConversationHeader :active="friend?.lastSeen" :avatar="friend?.photoUrl" :name="friend?.userName"/>
         </div>
 
         <div v-if="messages && messages.length > 0" class="chat-body p-4 flex-1 overflow-auto h-full">
             <ChatConversationMessage
-                v-for="{ id, text, userPhotoURL, userName, userId } in messages"
+                v-for="{ id, content, senderID, time } in messages"
                 :key="id"
-                :name="userName"
-                :photo-url="userPhotoURL"
-                :sender="userId === user?.uid"
+                :time="time"
+                :name="friend?.userName"
+                :photo-url="friend?.photoUrl"
+                :sender="senderID === user.userID"
             >
-                {{ text }}
+                {{ content }}
             </ChatConversationMessage>
 
             <div ref="bottom"></div>

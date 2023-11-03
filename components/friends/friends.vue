@@ -18,10 +18,10 @@ const handleEnter = () => {
 };
 
 const handleCreateChat = async (value: any) => {
-    const result = await createChat([value]);
+    const result = await createChat(value);
 
-    await router.push('/');
-}
+    await router.push(`/?chatId=${result.id}`);
+};
 </script>
 
 <template>

@@ -1,43 +1,55 @@
 <script setup lang="ts">
 
-const data = ref({
-    id: 0,
-    name: "Ricky Smith",
-    avatar: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
-    message: "YOU: Okay, Let's get the...",
-    time: "1 min ago",
-    online: false,
-    active: "Active 1h ago",
-    visibleAction: false,
-    action: {
-        read: false,
-        notification: true,
-        block: true,
+import {useChatStore} from "@/stores/chat";
+
+const route = useRoute();
+const chatStore = useChatStore();
+const {getChatList} = useChat();
+
+getChatList();
+
+const chats = computed<any>(() => chatStore.chats);
+
+const data = ref<any>(null);
+const chatId = ref<any>(null);
+
+watch(() => route.query.chatId,
+    newId => {
+        if (newId) {
+            chatId.value = newId;
+            if (chats.value.find((i: any) => i.id === newId)) {
+                data.value = chats.value.find((i: any) => i.id === newId).participant
+            }
+        }
+    }, {immediate: true}
+);
+
+watch(chats, async newChats => {
+    if (newChats.find((i: any) => i.id === chatId.value)) {
+        data.value = newChats.find((i: any) => i.id === chatId.value).participant
     }
-});
+}, {deep: true});
+
 </script>
 
 <template>
-    <div class="h-full w-full flex flex-col">
-        <!--  avt-->
+    <div v-if="data" class="h-full w-full flex flex-col">
         <div class="flex flex-col justify-center items-center ">
             <div class="mt-20">
-                <div>
-                    <el-avatar :size="110"
-                               :src="data.avatar"
-                    />
-                </div>
+                <el-avatar :size="110"
+                           :src="data.photoUrl"
+                />
             </div>
 
             <div class="flex flex-col">
                 <p class="font-semibold text-ellipsis whitespace-nowrap overflow-hidden text-xl mt-3">
-                    {{ data.name }}
+                    {{ data.userName }}
                 </p>
             </div>
 
             <div class="flex flex-col">
                 <p class="font-normal text-ellipsis whitespace-nowrap overflow-hidden mt-1">
-                    {{ data.active }}
+                    {{ data.lastSeen }}
                 </p>
             </div>
         </div>
@@ -50,6 +62,7 @@ const data = ref({
                 </span>
                 Thông tin <br>cá nhân
             </div>
+
             <div class="flex flex-col justify-center items-center text-center">
                 <span
                     class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center cursor-pointer hover:bg-gray-500 transition">
@@ -57,6 +70,7 @@ const data = ref({
                 </span>
                 Tắt thông <br> báo
             </div>
+
             <div class="flex flex-col justify-center items-center mb-6">
                 <span
                     class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center cursor-pointer hover:bg-gray-500 transition">
@@ -70,14 +84,15 @@ const data = ref({
             <el-collapse>
                 <el-collapse-item title="Thông tin đoạn chat" name="1">
                     <div class="flex flex-row items-center cursor-pointer">
-                    <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center ">
-                        <svg-icons name="icon-pin1" size="25" color="#000000"/>
-                    </span>
+                        <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center ">
+                            <svg-icons name="icon-pin1" size="25" color="#000000"/>
+                        </span>
                         <div class="mb-1 ml-2">
                             Xem tin nhắn đã ghim
                         </div>
                     </div>
                 </el-collapse-item>
+
                 <el-collapse-item title="Tuỳ chỉnh đoạn chat" name="2">
                     <div class="flex flex-row items-center cursor-pointer mb-2">
                         <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center "
@@ -97,20 +112,22 @@ const data = ref({
                             Thay đổi biểu tượng cảm xúc
                         </div>
                     </div>
+
                     <div class="flex flex-row items-center cursor-pointer mb-2">
-                    <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center"
-                          style="margin-bottom: 0">
-                        <svg-icons name="icon-Aa" size="20" color="#000000"/>
-                    </span>
+                        <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center"
+                              style="margin-bottom: 0">
+                            <svg-icons name="icon-Aa" size="20" color="#000000"/>
+                        </span>
                         <div class="mb-1 ml-2 flex-1">
                             Chỉnh sửa biêt danh
                         </div>
                     </div>
+
                     <div class="flex flex-row items-center cursor-pointer">
-                    <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center"
-                          style="margin-bottom: -2px">
-                        <svg-icons name="icon-search" size="20" color="#ffffff"/>
-                    </span>
+                        <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center"
+                              style="margin-bottom: -2px">
+                            <svg-icons name="icon-search" size="20" color="#ffffff"/>
+                        </span>
                         <div class="mb-1 ml-2 flex-1">
                             Tìm kiếm trong cuộc trò chuyện
                         </div>
@@ -127,6 +144,7 @@ const data = ref({
                             File phương tiện
                         </div>
                     </div>
+
                     <div class="flex flex-row items-center cursor-pointer mb-2">
                         <div class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center ">
                             <svg-icons name="icon-File1" size="20" color="#ffffff"/>
@@ -135,6 +153,7 @@ const data = ref({
                             File
                         </div>
                     </div>
+
                     <div class="flex flex-row items-center cursor-pointer mb-2">
                             <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center"
                                   style="margin-bottom: 0">
@@ -148,14 +167,15 @@ const data = ref({
 
                 <el-collapse-item title="Quyền riêng tư và hỗ trợ" name="4">
                     <div class="flex flex-row items-center cursor-pointer mb-2">
-                            <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center "
-                                  style="margin-bottom: -1px">
-                                <svg-icons name="icon-NonNofi" size="25" color="none"/>
-                            </span>
+                        <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center "
+                              style="margin-bottom: -1px">
+                            <svg-icons name="icon-NonNofi" size="25" color="none"/>
+                        </span>
                         <div class="mb-1 ml-2 flex-1">
                             Tắt thông báo
                         </div>
                     </div>
+
                     <div class="flex flex-row items-center cursor-pointer mb-2">
                         <div class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center ">
                             <svg-icons name="icon-BlockChat" size="20"/>
@@ -164,6 +184,7 @@ const data = ref({
                             Hạn chế
                         </div>
                     </div>
+
                     <div class="flex flex-row items-center cursor-pointer mb-2">
                             <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center"
                                   style="margin-bottom: 0">
@@ -173,6 +194,7 @@ const data = ref({
                             Chặn
                         </div>
                     </div>
+
                     <div class="flex flex-row items-center cursor-pointer">
                             <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center"
                                   style="margin-bottom: -2px">
@@ -191,6 +213,8 @@ const data = ref({
             </el-collapse>
         </div>
     </div>
+
+    <NuxtLayout v-else name="error" class="h-full w-full flex flex-col"/>
 </template>
 
 <style lang="scss">

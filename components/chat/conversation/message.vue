@@ -2,7 +2,8 @@
 const props = defineProps({
     name: {type: String, default: ''},
     photoUrl: {type: String, default: ''},
-    sender: {type: Boolean, default: false}
+    sender: {type: Boolean, default: false},
+    time: {type: String, default: ''},
 })
 </script>
 
