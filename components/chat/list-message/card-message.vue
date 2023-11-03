@@ -25,12 +25,15 @@ const props = defineProps({
         type: String,
         default: ""
     },
+    messages: {
+        type: Array,
+        default: []
+    },
     action: {
         type: Object,
         default: {
             read: false,
             notification: false,
-            block: false
         }
     },
     visibleAction: {
@@ -71,10 +74,11 @@ const handleClickItemMoreAction = (key: string) => {
             </p>
             <div class="font-light text-sm text-gray-500 flex items-center"
                  :class="action?.read ? 'font-semibold text-black' : ''">
-                    <span class="message__item__list-message text-ellipsis whitespace-nowrap overflow-hidden">
-                        <slot/>
-                    </span>
-                <span class="mx-1"> • </span>
+                <span v-if="messages && messages.length > 0"
+                      class="message__item__list-message text-ellipsis whitespace-nowrap overflow-hidden">
+                    {{ messages[messages.length - 1].content }}
+                </span>
+                <span v-if="messages && messages.length > 0" class="mx-1"> • </span>
                 <span>{{ time }}</span>
             </div>
         </div>

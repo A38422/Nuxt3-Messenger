@@ -16,12 +16,16 @@ import {
     setDoc,
     updateDoc,
     arrayUnion,
-    arrayRemove, getDocs, where
+    arrayRemove,
+    getDocs,
+    where,
+    orderBy
 } from "firebase/firestore";
 
 import Filter from "bad-words";
 
 import {useAuthStore} from '@/stores/auth'
+import {useChatStore} from "~/stores/chat";
 
 const app = initializeApp({
     apiKey: "AIzaSyCZigN06suPXsElTYF3WjDeZbm27vf16ig",
@@ -151,7 +155,7 @@ export const useAuth = () => {
     const checkUserOnlineStatus = async () => {
         const userRef = doc(collection(firestore, "Users"), user.value.userID);
 
-        onSnapshot(userRef, snapshot => {
+        return onSnapshot(userRef, snapshot => {
             const lastSeen = snapshot.data()?.lastSeen;
 
             if (lastSeen) {
@@ -300,6 +304,7 @@ export const useAuth = () => {
 };
 
 export const useChat = () => {
+    const chatStore = useChatStore();
     const {user} = useAuth();
 
     const createChat = async (participants: any) => {
@@ -308,15 +313,20 @@ export const useChat = () => {
 
         try {
             const chatRef = await addDoc(chatCollection, {
-                participants: [...participants, user.value],
-                notificationSetting: true,
-                Messages: [],
                 userID: user.value.userID,
-                photoURL: ""
+                participant: {...participants},
+                Messages: [],
+                action: {
+                    read: false,
+                    notification: false,
+                }
             });
 
             await getDoc(doc(chatCollection, chatRef.id)).then(r => {
-                chat = r.data();
+                chat = {
+                    ...r.data(),
+                    id: chatRef.id
+                };
             });
         } catch (e) {
             console.log("error: ", e);
@@ -325,11 +335,11 @@ export const useChat = () => {
         return chat;
     };
 
-    const updateChat = async (chatID: any, participants: any) => {
+    const updateChat = async (chatID: any, participant: any) => {
         const chatsRef = doc(collection(firestore, "Chats"), chatID);
 
         try {
-            await setDoc(chatsRef, {Participants: participants}, {merge: true});
+            await setDoc(chatsRef, {participant: participant}, {merge: true});
         } catch (error) {
             console.error("error: ", error);
         }
@@ -346,29 +356,39 @@ export const useChat = () => {
     };
 
     const getChatList = async () => {
-        let chats:any = [];
         const chatsRef = collection(firestore, "Chats");
 
-        await getDocs(chatsRef).then((querySnapshot) => {
-            chats = querySnapshot.docs.map(i => i.data());
-        }, error => {
-            console.log("error: ", error);
-        })
+        await onSnapshot(chatsRef, snapshot => {
+            const result = snapshot.docs.map(i => {
+                return {
+                    ...i.data(),
+                    id: i.id,
+                }
+            }).filter(o => {
+                return o?.participant.userID === user.value.userID || o?.userID === user.value.userID;
+            });
 
-        return chats;
-    };
-
-    const getMessagesInChat = async (chatID: any) => {
-        let messages:any = [];
-        const messagesRef = collection(doc(collection(firestore, "Chats"), chatID), "Messages");
-
-        await getDocs(messagesRef).then((querySnapshot) => {
-            messages = querySnapshot.docs.map(i => i.data()).reverse();
+            chatStore.setChats(result);
         }, (error) => {
             console.error("error: ", error);
         });
+    };
 
-        return messages;
+    const getMessagesInChat = async (chatID: any) => {
+        const messagesRef = collection(doc(collection(firestore, "Chats"), chatID), "Messages");
+        const messagesQuery = query(messagesRef, orderBy('timestamp', 'desc'));
+
+        await onSnapshot(messagesQuery, snapshot => {
+            const result = snapshot.docs.map(i => {
+                return {
+                    ...i.data(),
+                    id: messagesRef.id
+                }
+            }).reverse();
+            chatStore.setMessages(result);
+        }, (error) => {
+            console.error("error: ", error);
+        });
     };
 
     const sendMessage = async (chatID: any, content: any) => {
@@ -377,6 +397,7 @@ export const useChat = () => {
         const messagesRef = collection(doc(collection(firestore, "Chats"), chatID), "Messages");
         try {
             await addDoc(messagesRef, {
+                id: messagesRef.id,
                 senderID: user.value.userID,
                 content: filter.clean(content),
                 timestamp: serverTimestamp()
@@ -386,5 +407,12 @@ export const useChat = () => {
         }
     };
 
-    return {createChat, updateChat, updateChatNotificationSettings, getMessagesInChat, sendMessage, getChatList}
+    return {
+        createChat,
+        updateChat,
+        sendMessage,
+        getChatList,
+        getMessagesInChat,
+        updateChatNotificationSettings,
+    }
 };
