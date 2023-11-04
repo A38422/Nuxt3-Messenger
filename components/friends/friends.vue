@@ -5,10 +5,7 @@ import CardUser from "@/components/friends/card-user.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
-const {getUserList} = useAuth();
 const {createChat} = useChat();
-
-getUserList();
 
 const user = computed<any>(() => authStore.$state.user);
 const users = computed<any>(() => authStore.$state.userList);
@@ -22,8 +19,9 @@ const handleEnter = () => {
 const handleCreateChat = async (value: any) => {
     const result = await createChat(value);
 
-    await router.push(`/?chatId=${result.id}`);
+    if (result) await router.push(`/?chatId=${result.id}`);
 };
+
 </script>
 
 <template>

@@ -5,9 +5,6 @@ import {useChatStore} from "@/stores/chat";
 const route = useRoute();
 const authStore = useAuthStore();
 const chatStore = useChatStore();
-const {getChatList} = useChat();
-
-getChatList();
 
 const user = computed<any>(() => authStore.$state.user);
 const chats = computed<any>(() => chatStore.$state.chats);

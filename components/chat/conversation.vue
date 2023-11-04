@@ -1,68 +1,53 @@
 <script setup lang="ts">
 
-import {useChatStore} from "@/stores/chat";
-
 const route = useRoute();
 const authStore = useAuthStore();
 const chatStore = useChatStore();
-const {getMessagesInChat, sendMessage} = useChat();
+const {sendMessage, getMessagesInChat} = useChat();
 
 const user = computed<any>(() => authStore.$state.user);
 const chats = computed<any>(() => chatStore.$state.chats);
 const messages = computed<any>(() => chatStore.$state.messages);
+const friend = computed({
+    get() {
+        return chats.value.find((i: any) => i.id === chatId.value) ?
+            chats.value.find((i: any) => i.id === chatId.value).participants.find((x: any) => x.userID !== user.value.userID)
+            : null;
+    },
+    set(value) {
 
-const friend = ref(null);
+    },
+});
+
 const bottom = ref(null);
 const chatId = ref<any>(null);
-
-onMounted(() => {
-    // @ts-ignore
-    bottom.value?.scrollIntoView();
-})
 
 watch(
     messages,
     () => {
         nextTick(() => {
             // @ts-ignore
-            bottom.value?.scrollIntoView({behavior: 'smooth'})
+            // bottom.value?.scrollIntoView({behavior: 'smooth'})
+            bottom.value?.scrollIntoView();
         });
     },
     {deep: true}
 )
 
 watch(() => route.query.chatId,
-    async newId => {
-        await setTimeout(async () => {
-            if (newId) {
-                chatId.value = newId;
-                await getMessagesInChat(newId);
-                if (chats.value.find((i: any) => i.id === newId)) {
-                    friend.value = chats.value.find((i: any) => i.id === newId).participants
-                        .find((x: any) => x.userID !== user.value.userID);
-                }
-            }
-        }, 150)
+    newId => {
+        chatId.value = newId;
+        chatStore.setChatID(newId);
+        getMessagesInChat();
     }, {immediate: true}
 )
 
-watch(chats, async newChats => {
-    await setTimeout(async () => {
-        if (chatId.value) {
-            await getMessagesInChat(chatId.value);
-            if (newChats.find((i: any) => i.id === chatId.value)) {
-                friend.value = newChats.find((i: any) => i.id === chatId.value).participants
-                    .find((x: any) => x.userID !== user.value.userID);
-            }
-        }
-    }, 150)
-}, {deep: true});
-
 const send = (value: String) => {
-    if (route.query && route.query.chatId) {
+    if (route.query && route.query.chatId && value) {
         sendMessage(route.query.chatId, value);
     }
 };
+
 </script>
 
 <template>
