@@ -4,15 +4,17 @@ import {Search} from "@element-plus/icons-vue";
 import CardUser from "@/components/friends/card-user.vue";
 
 const router = useRouter();
-const {user, getUserList} = useAuth();
+const authStore = useAuthStore();
+const {getUserList} = useAuth();
 const {createChat} = useChat();
 
-const users = ref<any>([]);
+getUserList();
+
+const user = computed<any>(() => authStore.$state.user);
+const users = computed<any>(() => authStore.$state.userList);
+
 const valueInput = ref("");
 
-getUserList().then(r => {
-    users.value = r;
-});
 const handleEnter = () => {
 
 };

@@ -5,41 +5,19 @@ import MoreAction from "@/components/chat/list-message/more-action.vue";
 
 const emits = defineEmits(["onClickOutside", "onClickMoreAction", "onClickItemMoreAction"]);
 const props = defineProps({
-    id: {
-        type: Number,
-        default: null
-    },
-    name: {
-        type: String,
-        default: ""
-    },
-    avatar: {
-        type: String,
-        default: ""
-    },
-    online: {
-        type: Boolean,
-        default: false
-    },
-    time: {
-        type: String,
-        default: ""
-    },
-    messages: {
-        type: Array,
-        default: []
-    },
-    action: {
+    data: {
         type: Object,
         default: {
-            read: false,
-            notification: false,
+            id: null,
+            name: "",
+            avatar: "",
+            time: "",
+            messages: "",
+            action: null,
+            online: false,
+            visibleAction: false
         }
     },
-    visibleAction: {
-        type: Boolean,
-        default: false
-    }
 });
 
 const popoverRef = ref();
@@ -60,9 +38,9 @@ const handleClickItemMoreAction = (key: string) => {
 <template>
     <div class="item__list-message flex items-center"
          v-click-outside="onClickOutside">
-        <el-badge :is-dot="online" class="dot-badge mr-4">
+        <el-badge :is-dot="data.online" class="dot-badge mr-4">
             <el-avatar
-                :src="avatar"
+                :src="data.avatar"
                 :size="45"
                 class="border"
             />
@@ -70,20 +48,20 @@ const handleClickItemMoreAction = (key: string) => {
 
         <div class="flex flex-col">
             <p class="name__item__list-massage font-medium text-ellipsis whitespace-nowrap overflow-hidden">
-                {{ name }}
+                {{ data.name }}
             </p>
             <div class="font-light text-sm text-gray-500 flex items-center"
-                 :class="action?.read ? 'font-semibold text-black' : ''">
-                <span v-if="messages && messages.length > 0"
+                 :class="data?.action?.read ? 'font-semibold text-black' : ''">
+                <span v-if="data.messages && data.messages.length > 0"
                       class="message__item__list-message text-ellipsis whitespace-nowrap overflow-hidden">
-                    {{ messages[messages.length - 1].content }}
+                    {{ data.messages[data.messages.length - 1].content }}
                 </span>
-                <span v-if="messages && messages.length > 0" class="mx-1"> • </span>
-                <span>{{ time }}</span>
+                <span v-if="data.messages && data.messages.length > 0" class="mx-1"> • </span>
+                <span>{{ data.time }}</span>
             </div>
         </div>
 
-        <el-icon v-if="action?.notification"
+        <el-icon v-if="data.action.notification"
                  :size="22"
                  :color="'#808080'"
                  class="ml-4">
@@ -92,16 +70,16 @@ const handleClickItemMoreAction = (key: string) => {
 
         <el-popover
             ref="popoverRef"
-            :visible="visibleAction"
+            :visible="data.visibleAction"
             placement="bottom"
             :width="250">
-            <more-action :action="action"
+            <more-action :action="data.action"
                          @on-click-item="(key) => handleClickItemMoreAction(key)"/>
 
             <template #reference>
                 <el-button
                     class="more-action flex items-center justify-center"
-                    :class="visibleAction ? 'active__more-action' : ''"
+                    :class="data.visibleAction ? 'active__more-action' : ''"
                     @click.stop="handleClickMoreAction">
                     <el-icon :size="14">
                         <MoreFilled/>

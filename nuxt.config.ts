@@ -3,13 +3,17 @@ import {defineNuxtConfig} from "nuxt/config";
 
 export default defineNuxtConfig({
     ssr: false,
+    experimental: {
+        watcher: "chokidar",
+    },
     devtools: {enabled: false},
     app: {
         head: {
             title: "Messenger",
             meta: [
                 // <meta name="viewport" content="width=device-width, initial-scale=1">
-                {name: 'viewport', content: 'width=device-width, initial-scale=1'}
+                {name: 'viewport', content: 'width=device-width, initial-scale=1'},
+                {"http-equiv": "Cross-Origin-Opener-Policy", content: "allow-popups"}
             ],
             script: [
                 {src: 'spaghetti.js'}
@@ -25,6 +29,7 @@ export default defineNuxtConfig({
         }
     },
     $production: {
+        // @ts-ignore
         routeRules: {
             '/**': {isr: true}
         }
@@ -74,4 +79,5 @@ export default defineNuxtConfig({
             autoprefixer: {},
         },
     },
+    components: true
 })

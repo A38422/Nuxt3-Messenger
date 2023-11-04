@@ -40,14 +40,14 @@ const app = initializeApp({
 });
 
 const auth = getAuth();
-
 const firestore = getFirestore(app);
-
 const filter = new Filter();
 
 export const useAuth = () => {
     const authStore = useAuthStore();
-    let user = computed(() => authStore.$state.user);
+    const chatStore = useChatStore();
+
+    const user = computed(() => authStore.$state.user);
 
     const signIn = async () => {
         const googleProvider = new GoogleAuthProvider();
@@ -62,6 +62,8 @@ export const useAuth = () => {
     const signOut = async () => {
         await updateLastSeenTime();
         await authStore.deleteUser();
+        await authStore.deleteUserList();
+        await chatStore.clearChat();
         await auth.signOut();
     };
 
@@ -244,19 +246,19 @@ export const useAuth = () => {
     };
 
     const getUserList = async () => {
-        let userList: any[] = [];
+        if (!user.value) return ;
 
         try {
             const userRef = collection(firestore, "Users");
             const querySnapshot = await getDocs(userRef);
-            userList = querySnapshot.docs.map(i => i.data()).filter(o => {
+            const userList = querySnapshot.docs.map(i => i.data()).filter(o => {
                 return user.value.userID !== o.userID;
             });
+
+            authStore.setUserList(userList);
         } catch (error) {
             console.log("error: ", error);
         }
-
-        return userList;
     };
 
     const getBlockedUsersList = async () => {
@@ -306,22 +308,24 @@ export const useAuth = () => {
 };
 
 export const useChat = () => {
+    const authStore = useAuthStore();
     const chatStore = useChatStore();
-    const {user} = useAuth();
+    const user = computed(() => authStore.$state.user);
 
-    const createChat = async (participants: any) => {
+    const createChat = async (friend: any) => {
         let chat: any = null;
         const chatCollection = collection(firestore, "Chats");
 
         try {
             const chatRef = await addDoc(chatCollection, {
-                userID: user.value.userID,
-                participant: {...participants},
+                // userID: user.value.userID,
+                participants: [{...friend}, {...user.value}],
                 Messages: [],
                 action: {
                     read: false,
                     notification: false,
-                }
+                },
+                updatedTime: serverTimestamp(),
             });
 
             await getDoc(doc(chatCollection, chatRef.id)).then(r => {
@@ -337,11 +341,11 @@ export const useChat = () => {
         return chat;
     };
 
-    const updateChat = async (chatID: any, participant: any) => {
+    const updateChat = async (chatID: any, participants: any) => {
         const chatsRef = doc(collection(firestore, "Chats"), chatID);
 
         try {
-            await setDoc(chatsRef, {participant: participant}, {merge: true});
+            await setDoc(chatsRef, {participants: participants}, {merge: true});
         } catch (error) {
             console.error("error: ", error);
         }
@@ -358,6 +362,8 @@ export const useChat = () => {
     };
 
     const getChatList = async () => {
+        if (!user.value) return;
+
         const chatsRef = collection(firestore, "Chats");
 
         await onSnapshot(chatsRef, snapshot => {
@@ -368,7 +374,11 @@ export const useChat = () => {
                 }
             }).filter(o => {
                 // @ts-ignore
-                return o?.participant.userID === user.value.userID || o?.userID === user.value.userID;
+                if (o && o.participants) {
+                    // @ts-ignore
+                    return Boolean(o.participants.find((x: any) => x.userID === user.value.userID));
+                }
+                return false;
             });
 
             chatStore.setChats(result);
@@ -395,7 +405,7 @@ export const useChat = () => {
     };
 
     const sendMessage = async (chatID: any, content: any) => {
-        if (!user) return;
+        if (!user.value) return;
 
         const messagesRef = collection(doc(collection(firestore, "Chats"), chatID), "Messages");
         try {

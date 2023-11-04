@@ -8,10 +8,13 @@ import {useChatStore} from "@/stores/chat";
 const route = useRoute();
 const router = useRouter();
 const chatStore = useChatStore();
+const authStore = useAuthStore();
 const {getChatList} = useChat();
+
 getChatList();
 
-const chats = computed(() => chatStore.chats);
+const chats = computed(() => chatStore.$state.chats);
+const user = computed(() => authStore.$state.user);
 const sizeIcon = 25;
 
 const dataTable = ref<any>([]);
@@ -19,12 +22,18 @@ const valueInput = ref("");
 const isActive = ref<any>(null);
 
 watch(chats, (newChats) => {
-    dataTable.value = newChats.map((item: any) => {
-        return {
-            ...item,
-            visibleAction: false,
+    setTimeout(() => {
+        if (newChats && newChats.length > 0) {
+            dataTable.value = newChats.map((item: any) => {
+                return {
+                    ...item,
+                    visibleAction: false,
+                }
+            });
+        } else {
+            dataTable.value = [];
         }
-    });
+    }, 150);
 }, {deep: true});
 
 watch(() => route.query.chatId,
@@ -51,12 +60,27 @@ const onClickOutside = (item: any) => {
 
 const handleClickItemMoreAction = _.debounce((key: any, item: any) => {
     if (key === "delete") {
-        dataTable.value = dataTable.value.filter(i => i.id !== item.id);
+        dataTable.value = dataTable.value.filter((i: any) => i.id !== item.id);
         return;
     }
 
     item.action[key] = !item.action[key];
 }, 200);
+
+const filterFriend = (data: any) => {
+    const temp = data.participants.find((x: any) => x.userID !== user.value.userID);
+    return {
+        ...temp,
+        id: temp.userID,
+        name: temp.userName,
+        avatar: temp.photoUrl,
+        online: temp.lastSeen,
+        time: temp.lastSeen,
+        action: data.action,
+        updatedTime: data.updatedTime,
+        visibleAction: data.visibleAction,
+    };
+};
 
 </script>
 
@@ -86,23 +110,20 @@ const handleClickItemMoreAction = _.debounce((key: any, item: any) => {
             />
         </div>
 
-        <div v-if="dataTable && dataTable.length > 0" class="content__list-message overflow-auto flex-1 p-1.5"
+        <div v-if="dataTable && dataTable.length > 0"
+             class="content__list-message overflow-auto flex-1 p-1.5"
              id="scroll__list-message">
             <card-message v-for="item in dataTable"
                           :class="isActive === item.id ? 'active' : ''"
-                          :id="item.id"
                           :key="item.id"
-                          :name="item.participant.userName"
-                          :online="item.participant.lastSeen"
-                          :avatar="item.participant.photoUrl"
-                          :action="item.action"
-                          :messages="item.Messages"
-                          :visible-action="item.visibleAction"
+                          :data="filterFriend(item)"
                           @click="handleClickItem(item.id)"
                           @on-click-outside="onClickOutside(item)"
                           @on-click-more-action="handleClickMoreAction(item)"
                           @on-click-item-more-action="(key) => handleClickItemMoreAction(key, item)"/>
         </div>
+
+        <NuxtLayout v-else name="error" class="flex-1"/>
 
         <div class="cover-bar"></div>
     </div>

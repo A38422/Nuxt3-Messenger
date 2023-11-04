@@ -3,12 +3,14 @@
 import {useChatStore} from "@/stores/chat";
 
 const route = useRoute();
+const authStore = useAuthStore();
 const chatStore = useChatStore();
 const {getChatList} = useChat();
 
 getChatList();
 
-const chats = computed<any>(() => chatStore.chats);
+const user = computed<any>(() => authStore.$state.user);
+const chats = computed<any>(() => chatStore.$state.chats);
 
 const data = ref<any>(null);
 const chatId = ref<any>(null);
@@ -18,22 +20,26 @@ watch(() => route.query.chatId,
         if (newId) {
             chatId.value = newId;
             if (chats.value.find((i: any) => i.id === newId)) {
-                data.value = chats.value.find((i: any) => i.id === newId).participant
+                data.value = chats.value.find((i: any) => i.id === newId).participants
+                    .find((x: any) => x.userID !== user.value.userID);
             }
         }
     }, {immediate: true}
 );
 
 watch(chats, async newChats => {
-    if (newChats.find((i: any) => i.id === chatId.value)) {
-        data.value = newChats.find((i: any) => i.id === chatId.value).participant
+    if (chatId.value) {
+        if (newChats.find((i: any) => i.id === chatId.value)) {
+            data.value = newChats.find((i: any) => i.id === chatId.value).participants
+                .find((x: any) => x.userID !== user.value.userID);
+        }
     }
 }, {deep: true});
 
 </script>
 
 <template>
-    <div v-if="data" class="h-full w-full flex flex-col">
+    <div v-if="user && data" class="h-full w-full flex flex-col">
         <div class="flex flex-col justify-center items-center ">
             <div class="mt-20">
                 <el-avatar :size="110"
@@ -43,13 +49,13 @@ watch(chats, async newChats => {
 
             <div class="flex flex-col">
                 <p class="font-semibold text-ellipsis whitespace-nowrap overflow-hidden text-xl mt-3">
-                    {{ data.userName }}
+                    {{ data?.userName }}
                 </p>
             </div>
 
             <div class="flex flex-col">
                 <p class="font-normal text-ellipsis whitespace-nowrap overflow-hidden mt-1">
-                    {{ data.lastSeen }}
+                    {{ data?.lastSeen }}
                 </p>
             </div>
         </div>
