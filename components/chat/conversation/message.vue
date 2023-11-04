@@ -18,7 +18,7 @@ const props = defineProps({
         />
 
         <div
-            class="messages text-sm text-gray-700 px-6 py-3 max-w-xs lg:max-w-md flex items-center rounded-3xl"
+            class="messages text-sm text-gray-700 px-3 py-2 max-w-xs lg:max-w-md flex items-center rounded-3xl"
             :class="sender ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'">
             <slot/>
         </div>

@@ -19,15 +19,14 @@ import {
     arrayRemove,
     getDocs,
     where,
-    orderBy
+    orderBy, deleteDoc
 } from "firebase/firestore";
 
 import Filter from "bad-words";
 
-import {useAuthStore} from '@/stores/auth'
-import {useChatStore} from "~/stores/chat";
+const runtimeConfig = useRuntimeConfig();
 
-const runtimeConfig = useRuntimeConfig()
+const nuxtApp = useNuxtApp();
 
 const app = initializeApp({
     apiKey: runtimeConfig.public.apiKey,
@@ -39,8 +38,8 @@ const app = initializeApp({
     measurementId: runtimeConfig.public.measurementId
 });
 
-const auth = getAuth();
-const firestore = getFirestore(app);
+const $auth = getAuth();
+const $firestore = getFirestore(app);
 const filter = new Filter();
 
 export const useAuth = () => {
@@ -51,7 +50,7 @@ export const useAuth = () => {
 
     const signIn = async () => {
         const googleProvider = new GoogleAuthProvider();
-        signInWithPopup(auth, googleProvider).then((result) => {
+        signInWithPopup($auth, googleProvider).then((result) => {
             // const credential = GoogleAuthProvider.credentialFromResult(result);
             // const token = credential.accessToken;
             saveUserDataToFirestore(result?.user);
@@ -64,14 +63,14 @@ export const useAuth = () => {
         await authStore.deleteUser();
         await authStore.deleteUserList();
         await chatStore.clearChat();
-        await auth.signOut();
+        await $auth.signOut();
     };
 
     const saveUserDataToFirestore = async (user: any) => {
         try {
             const {uid, displayName, email, photoURL} = user;
 
-            const userCollection = collection(firestore, "Users");
+            const userCollection = collection($firestore, "Users");
 
             const userDoc = doc(userCollection, uid);
 
@@ -104,7 +103,7 @@ export const useAuth = () => {
 
     const updateNotificationSettings = async (notificationSetting: Boolean) => {
         try {
-            const userRef = doc(collection(firestore, "Users"), user.value.userID);
+            const userRef = doc(collection($firestore, "Users"), user.value.userID);
             await updateDoc(userRef, {notificationSettings: notificationSetting});
         } catch (error) {
             console.log("error: ", error);
@@ -113,7 +112,7 @@ export const useAuth = () => {
 
     const blockUser = async (blockedUserID: any) => {
         try {
-            const userRef = doc(collection(firestore, "Users"), user.value.userID);
+            const userRef = doc(collection($firestore, "Users"), user.value.userID);
             await updateDoc(userRef, {blockedUsers: arrayUnion(blockedUserID)})
 
             authStore.setUser({
@@ -127,7 +126,7 @@ export const useAuth = () => {
 
     const unblockUser = async (unBlockedUserID: any) => {
         try {
-            const userRef = doc(collection(firestore, "Users"), user.value.userID);
+            const userRef = doc(collection($firestore, "Users"), user.value.userID);
             await updateDoc(userRef, {blockedUsers: arrayRemove(unBlockedUserID)})
 
             authStore.setUser({
@@ -141,7 +140,7 @@ export const useAuth = () => {
 
     const updateLastSeenTime = async () => {
         try {
-            const userRef = doc(collection(firestore, "Users"), user.value.userID);
+            const userRef = doc(collection($firestore, "Users"), user.value.userID);
 
             const lastSeenTime = new Date();
 
@@ -157,7 +156,7 @@ export const useAuth = () => {
     };
 
     const checkUserOnlineStatus = async () => {
-        const userRef = doc(collection(firestore, "Users"), user.value.userID);
+        const userRef = doc(collection($firestore, "Users"), user.value.userID);
 
         return onSnapshot(userRef, snapshot => {
             const lastSeen = snapshot.data()?.lastSeen;
@@ -176,7 +175,7 @@ export const useAuth = () => {
 
     const sendFriendRequest = async (receiverID: any) => {
         try {
-            const friendRequestsCollection = collection(firestore, "FriendRequests");
+            const friendRequestsCollection = collection($firestore, "FriendRequests");
 
             await addDoc(friendRequestsCollection, {
                 senderID: user.value.userID,
@@ -190,7 +189,7 @@ export const useAuth = () => {
 
     const acceptFriendRequest = async (requestID: any) => {
         try {
-            const friendRequestRef = doc(collection(firestore, "FriendRequests"), requestID);
+            const friendRequestRef = doc(collection($firestore, "FriendRequests"), requestID);
             const friendRequestDoc = await getDoc(friendRequestRef);
             const data = friendRequestDoc.data();
 
@@ -203,7 +202,7 @@ export const useAuth = () => {
 
     const rejectFriendRequest = async (requestID: any) => {
         try {
-            const friendRequestRef = doc(collection(firestore, "FriendRequests"), requestID);
+            const friendRequestRef = doc(collection($firestore, "FriendRequests"), requestID);
 
             await updateDoc(friendRequestRef, {status: "rejected"});
         } catch (error) {
@@ -213,10 +212,10 @@ export const useAuth = () => {
 
     const addFriendToFriendList = async (friendID: any) => {
         try {
-            const userRef = doc(collection(firestore, "Users"), user.value.userID);
+            const userRef = doc(collection($firestore, "Users"), user.value.userID);
             const userDoc = await getDoc(userRef);
 
-            const friendRef = doc(collection(firestore, "Users"), friendID);
+            const friendRef = doc(collection($firestore, "Users"), friendID);
             const friendDoc = await getDoc(friendID);
 
             await updateDoc(userRef, {friendList: arrayUnion(friendDoc.data())});
@@ -234,7 +233,7 @@ export const useAuth = () => {
     const getFriendList = async () => {
         const friendList = ref<any>([]);
 
-        const userRef = doc(collection(firestore, "Users"), user.value.userID);
+        const userRef = doc(collection($firestore, "Users"), user.value.userID);
 
         await getDoc(userRef).then((querySnapshot) => {
             friendList.value = querySnapshot.data()?.friendList || [];
@@ -245,26 +244,32 @@ export const useAuth = () => {
         return friendList;
     };
 
-    const getUserList = async () => {
-        if (!user.value) return ;
+    const unsubscribeUserList = ref<any>(null);
+    const getUserList = () => {
+        if (!user.value) return;
 
-        try {
-            const userRef = collection(firestore, "Users");
-            const querySnapshot = await getDocs(userRef);
-            const userList = querySnapshot.docs.map(i => i.data()).filter(o => {
+        // @ts-ignore
+        const userRef = collection($firestore, "Users");
+
+        unsubscribeUserList.value = onSnapshot(userRef, snapshot => {
+            const result = snapshot.docs.map(i => i.data()).filter(o => {
                 return user.value.userID !== o.userID;
             });
 
-            authStore.setUserList(userList);
-        } catch (error) {
-            console.log("error: ", error);
-        }
+            authStore.setUserList(result);
+        }, (error) => {
+            console.error("error: ", error);
+        });
     };
+
+    onUnmounted(() => {
+        unsubscribeUserList.value?.();
+    });
 
     const getBlockedUsersList = async () => {
         const blockedList = ref<any>([]);
 
-        const userRef = doc(collection(firestore, "Users"), user.value.userID);
+        const userRef = doc(collection($firestore, "Users"), user.value.userID);
 
         await getDoc(userRef).then((querySnapshot) => {
             blockedList.value = querySnapshot.data()?.blockedUsers || [];
@@ -277,7 +282,7 @@ export const useAuth = () => {
 
     const searchUsersByKeyword = async (keyword: String) => {
         const data = ref<any>([]);
-        const usersRef = collection(firestore, "Users");
+        const usersRef = collection($firestore, "Users");
 
         const usersQuery = query(usersRef, where('Keywords', 'array-contains', keyword));
         await getDocs(usersQuery).then((querySnapshot) => {
@@ -310,15 +315,23 @@ export const useAuth = () => {
 export const useChat = () => {
     const authStore = useAuthStore();
     const chatStore = useChatStore();
+
     const user = computed(() => authStore.$state.user);
+    const chatID = computed(() => chatStore.$state.chatID);
 
     const createChat = async (friend: any) => {
-        let chat: any = null;
-        const chatCollection = collection(firestore, "Chats");
+        const {checkExistChat} = useUtils();
+
+        let [isExists, chat] = checkExistChat(user.value.userID, friend.userID);
+
+        if (isExists) {
+            return chat;
+        }
+
+        const chatCollection = collection($firestore, "Chats");
 
         try {
             const chatRef = await addDoc(chatCollection, {
-                // userID: user.value.userID,
                 participants: [{...friend}, {...user.value}],
                 Messages: [],
                 action: {
@@ -342,7 +355,7 @@ export const useChat = () => {
     };
 
     const updateChat = async (chatID: any, participants: any) => {
-        const chatsRef = doc(collection(firestore, "Chats"), chatID);
+        const chatsRef = doc(collection($firestore, "Chats"), chatID);
 
         try {
             await setDoc(chatsRef, {participants: participants}, {merge: true});
@@ -351,8 +364,18 @@ export const useChat = () => {
         }
     };
 
+    const deleteChat = async (chatID: any) => {
+        const chatsRef = doc(collection($firestore, "Chats"), chatID);
+
+        try {
+            await deleteDoc(chatsRef);
+        } catch (error) {
+            console.error("error: ", error);
+        }
+    };
+
     const updateChatNotificationSettings = async (chatID: any, notificationSetting: any) => {
-        const chatsRef = doc(collection(firestore, "Chats"), chatID);
+        const chatsRef = doc(collection($firestore, "Chats"), chatID);
 
         try {
             await setDoc(chatsRef, {notificationSetting: notificationSetting}, {merge: true});
@@ -361,12 +384,12 @@ export const useChat = () => {
         }
     };
 
-    const getChatList = async () => {
+    const unsubscribeChatList = ref<any>(null);
+    const getChatList = () => {
         if (!user.value) return;
+        const chatsRef = collection($firestore, "Chats");
 
-        const chatsRef = collection(firestore, "Chats");
-
-        await onSnapshot(chatsRef, snapshot => {
+        unsubscribeChatList.value = onSnapshot(chatsRef, snapshot => {
             const result = snapshot.docs.map(i => {
                 return {
                     ...i.data(),
@@ -387,32 +410,37 @@ export const useChat = () => {
         });
     };
 
-    const getMessagesInChat = async (chatID: any) => {
-        const messagesRef = collection(doc(collection(firestore, "Chats"), chatID), "Messages");
-        const messagesQuery = query(messagesRef, orderBy('timestamp', 'desc'));
+    const unsubscribeMessagesInChat = ref<any>(null);
+    const getMessagesInChat = () => {
+        if (chatID.value) {
+            // @ts-ignore
+            let messagesRef = collection(doc(collection($firestore, "Chats"), chatID.value), "Messages");
+            const messagesQuery = query(messagesRef, orderBy('timestamp', 'desc'));
 
-        await onSnapshot(messagesQuery, snapshot => {
-            const result = snapshot.docs.map(i => {
-                return {
-                    ...i.data(),
-                    id: messagesRef.id
-                }
-            }).reverse();
-            chatStore.setMessages(result);
-        }, (error) => {
-            console.error("error: ", error);
-        });
+            unsubscribeMessagesInChat.value = onSnapshot(messagesQuery, snapshot => {
+                const result = snapshot.docs.map(i => {
+                    return {
+                        ...i.data(),
+                        id: messagesRef.id
+                    }
+                }).reverse();
+                chatStore.setMessages(result);
+            }, (error) => {
+                console.error("error: ", error);
+            });
+        }
     };
 
     const sendMessage = async (chatID: any, content: any) => {
         if (!user.value) return;
 
-        const messagesRef = collection(doc(collection(firestore, "Chats"), chatID), "Messages");
+        const messagesRef = collection(doc(collection($firestore, "Chats"), chatID), "Messages");
         try {
             await addDoc(messagesRef, {
                 id: messagesRef.id,
                 senderID: user.value.userID,
-                content: filter.clean(content),
+                // content: filter.clean(content),
+                content: content,
                 timestamp: serverTimestamp()
             });
         } catch (e) {
@@ -420,9 +448,15 @@ export const useChat = () => {
         }
     };
 
+    onUnmounted(() => {
+        unsubscribeMessagesInChat.value?.();
+        unsubscribeChatList.value?.();
+    });
+
     return {
         createChat,
         updateChat,
+        deleteChat,
         sendMessage,
         getChatList,
         getMessagesInChat,

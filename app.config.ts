@@ -6,5 +6,5 @@ export default defineAppConfig({
             danger: "#ff0000",
             info: "#ffffff",
         }
-    }
+    },
 })
