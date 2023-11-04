@@ -1,13 +1,16 @@
 <script setup lang="ts">
 const props = defineProps({
     avatar: {
-        type: String
+        type: String,
+        default: null
     },
     name: {
-        type: String
+        type: String,
+        default: null
     },
     active: {
-        type: String
+        // type: String
+        default: null
     }
 });
 </script>
@@ -23,8 +26,8 @@ const props = defineProps({
         </div>
 
         <div>
-            <p class="text-sm font-bold">{{ name }}</p>
-            <p class="text-xs">{{ active }}</p>
+            <p class="text-sm font-semibold">{{ name }}</p>
+<!--            <p class="text-xs">{{ active }}</p>-->
         </div>
     </div>
 

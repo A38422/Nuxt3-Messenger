@@ -14,11 +14,11 @@
         <el-col :span="6" class="border-r-2 border-r-gray-100 h-full w-full">
             <ChatListMessage/>
         </el-col>
-        
+
         <el-col :span="12" class="border-r-2 border-r-gray-100 h-full w-full">
             <ChatConversation/>
         </el-col>
-        
+
         <el-col :span="6" class="h-full w-full">
             <ChatOtherAction/>
         </el-col>

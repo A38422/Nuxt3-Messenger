@@ -3,12 +3,13 @@
 import {useChatStore} from "@/stores/chat";
 
 const route = useRoute();
-const {user} = useAuth();
+const authStore = useAuthStore();
 const chatStore = useChatStore();
 const {getMessagesInChat, sendMessage} = useChat();
 
-const chats = computed<any>(() => chatStore.chats);
-const messages = computed<any>(() => chatStore.messages);
+const user = computed<any>(() => authStore.$state.user);
+const chats = computed<any>(() => chatStore.$state.chats);
+const messages = computed<any>(() => chatStore.$state.messages);
 
 const friend = ref(null);
 const bottom = ref(null);
@@ -32,21 +33,29 @@ watch(
 
 watch(() => route.query.chatId,
     async newId => {
-        if (newId) {
-            chatId.value = newId;
-            await getMessagesInChat(newId);
-            if (chats.value.find((i: any) => i.id === newId)) {
-                friend.value = chats.value.find((i: any) => i.id === newId).participant
+        await setTimeout(async () => {
+            if (newId) {
+                chatId.value = newId;
+                await getMessagesInChat(newId);
+                if (chats.value.find((i: any) => i.id === newId)) {
+                    friend.value = chats.value.find((i: any) => i.id === newId).participants
+                        .find((x: any) => x.userID !== user.value.userID);
+                }
             }
-        }
+        }, 150)
     }, {immediate: true}
 )
 
 watch(chats, async newChats => {
-    await getMessagesInChat(chatId.value);
-    if (newChats.find((i: any) => i.id === chatId.value)) {
-        friend.value = newChats.find((i: any) => i.id === chatId.value).participant
-    }
+    await setTimeout(async () => {
+        if (chatId.value) {
+            await getMessagesInChat(chatId.value);
+            if (newChats.find((i: any) => i.id === chatId.value)) {
+                friend.value = newChats.find((i: any) => i.id === chatId.value).participants
+                    .find((x: any) => x.userID !== user.value.userID);
+            }
+        }
+    }, 150)
 }, {deep: true});
 
 const send = (value: String) => {

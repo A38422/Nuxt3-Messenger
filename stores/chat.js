@@ -17,6 +17,10 @@ export const useChatStore = defineStore('chat', {
         },
         setMessages(data) {
             this.$state.messages = data;
-        }
+        },
+        clearChat() {
+            this.$state.chats = null;
+            this.$state.messages = null;
+        },
     },
 })
