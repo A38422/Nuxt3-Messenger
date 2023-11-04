@@ -14,20 +14,6 @@ const props = defineProps({
         },
     }
 });
-const dialogVisible = ref(false)
-const handleClickDelete = () => {
-    dialogVisible.value = true
-}
-const outmodal = () => {
-    delete();
-    dialogVisible.value = false
-    ElNotification({
-        title: 'Notice',
-        message: 'Delete Complete ',
-        type: 'success',
-        position: 'bottom-right',
-    })
-}
 
 const emits = defineEmits(["onChangeRead", "onChangeNotification", "onChangeBlock", "onDelete", "onClickItem"])
 
@@ -74,18 +60,6 @@ const handleClick = (key : string) => {
         </div>
     </div>
 
-
-    <el-dialog v-model="dialogVisible" title="Notice" width="30%" draggable>
-        <span class="ml-12" style="font-size: 17px"> Do you wanna delete this chat ?</span>
-        <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="dialogVisible = false">Cancel</el-button>
-                    <el-button type="primary" @click="outmodal">
-                      Confirm
-                    </el-button>
-                </span>
-        </template>
-    </el-dialog>
 </template>
 
 <style scoped lang="scss">

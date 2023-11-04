@@ -4,21 +4,33 @@ import {values} from "lodash";
 
 const route = useRoute();
 const {user, signOut, signIn} = useAuth();
-const dialogVisible = ref(false)
 const active = computed<string>(() => route.path);
+
 const handleClickSignOut = () => {
-    dialogVisible.value = true
+    ElMessageBox.confirm(
+        'Messenger will be sign out your account. Continue?',
+        'Warning',
+        {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            type: 'warning',
+        }
+    )
+        .then(() => {
+            signOut()
+            ElMessage({
+                type: 'success',
+                message: 'Sign out completed',
+            })
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: 'Sign out canceled',
+            })
+        })
 }
-const outmodal = () => {
-    signOut()
-    dialogVisible.value = false
-    ElNotification({
-        title: 'Notice',
-        message: 'Sign Out Complete ',
-        type: 'success',
-        position: 'bottom-right',
-    })
-}
+
 const sizeIcon = 25;
 const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 </script>
@@ -113,20 +125,6 @@ const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-p
         <el-main>
             <slot/>
         </el-main>
-
-        <el-dialog v-model="dialogVisible" title="Notice" width="30%" draggable>
-            <span class="ml-12" style="font-size: 17px"> Do you wanna sign out your account ?</span>
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="dialogVisible = false">Cancel</el-button>
-                    <el-button type="primary" @click="outmodal">
-                      Confirm
-                    </el-button>
-                </span>
-            </template>
-        </el-dialog>
-
-
     </el-container>
 </template>
 
