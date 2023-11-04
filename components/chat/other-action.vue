@@ -66,7 +66,8 @@ watch(chats, async newChats => {
                     class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center cursor-pointer hover:bg-gray-500 transition">
                     <svg-icons name="icon-profile" size="20" color="#000000"/>
                 </span>
-                Thông tin <br>cá nhân
+<!--                Thông tin <br>cá nhân-->
+                Personal <br>information
             </div>
 
             <div class="flex flex-col justify-center items-center text-center">
@@ -74,7 +75,8 @@ watch(chats, async newChats => {
                     class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center cursor-pointer hover:bg-gray-500 transition">
                     <svg-icons name="icon-bell" size="20" color="#ffffff"/>
                 </span>
-                Tắt thông <br> báo
+<!--                Tắt thông <br> báo-->
+                Turn off <br>notifications
             </div>
 
             <div class="flex flex-col justify-center items-center mb-6">
@@ -82,31 +84,33 @@ watch(chats, async newChats => {
                     class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center cursor-pointer hover:bg-gray-500 transition">
                     <svg-icons name="icon-search" size="20" color="#ffffff"/>
                 </span>
-                Tìm kiếm <br>
+                Search <br>
             </div>
         </div>
 
         <div class="demo-collapse px-8 overflow-auto flex-1 mt-3">
             <el-collapse>
-                <el-collapse-item title="Thông tin đoạn chat" name="1">
+                <el-collapse-item title="Chat details" name="1">
                     <div class="flex flex-row items-center cursor-pointer">
                         <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center ">
                             <svg-icons name="icon-pin1" size="25" color="#000000"/>
                         </span>
                         <div class="mb-1 ml-2">
-                            Xem tin nhắn đã ghim
+<!--                            Xem tin nhắn đã ghim-->
+                            View pinned messages
                         </div>
                     </div>
                 </el-collapse-item>
 
-                <el-collapse-item title="Tuỳ chỉnh đoạn chat" name="2">
+                <el-collapse-item title="Chat customization" name="2">
                     <div class="flex flex-row items-center cursor-pointer mb-2">
                         <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center "
                               style="margin-bottom: -1px">
                             <svg-icons name="icon-ring" size="25" color="#000000"/>
                         </span>
                         <div class="mb-1 ml-2 flex-1">
-                            Đổi chủ đề
+<!--                            Đổi chủ đề-->
+                            Change topic
                         </div>
                     </div>
 
@@ -115,7 +119,8 @@ watch(chats, async newChats => {
                             <svg-icons name="icon-like2" size="20"/>
                         </div>
                         <div class="mb-1 ml-2 flex-1">
-                            Thay đổi biểu tượng cảm xúc
+<!--                            Thay đổi biểu tượng cảm xúc-->
+                            Change emoji
                         </div>
                     </div>
 
@@ -125,7 +130,8 @@ watch(chats, async newChats => {
                             <svg-icons name="icon-Aa" size="20" color="#000000"/>
                         </span>
                         <div class="mb-1 ml-2 flex-1">
-                            Chỉnh sửa biêt danh
+<!--                            Chỉnh sửa biêt danh-->
+                            Edit nickname
                         </div>
                     </div>
 
@@ -135,19 +141,21 @@ watch(chats, async newChats => {
                             <svg-icons name="icon-search" size="20" color="#ffffff"/>
                         </span>
                         <div class="mb-1 ml-2 flex-1">
-                            Tìm kiếm trong cuộc trò chuyện
+<!--                            Tìm kiếm trong cuộc trò chuyện-->
+                            Search in chat
                         </div>
                     </div>
                 </el-collapse-item>
 
-                <el-collapse-item title="File phương tiện, file và liên kết" name="3">
+                <el-collapse-item title="Media files, files and links" name="3">
                     <div class="flex flex-row items-center cursor-pointer mb-2">
                             <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center "
                                   style="margin-bottom: -1px">
                                 <svg-icons name="icon-LPhoto" size="25" color="#000000"/>
                             </span>
                         <div class="mb-1 ml-2 flex-1">
-                            File phương tiện
+<!--                            File phương tiện-->
+                            Media files
                         </div>
                     </div>
 
@@ -156,7 +164,7 @@ watch(chats, async newChats => {
                             <svg-icons name="icon-File1" size="20" color="#ffffff"/>
                         </div>
                         <div class="mb-1 ml-2 flex-1">
-                            File
+                            Files
                         </div>
                     </div>
 
@@ -166,19 +174,20 @@ watch(chats, async newChats => {
                                 <svg-icons name="icon-Link" size="20" color="#ffffff"/>
                             </span>
                         <div class="mb-1 ml-2 flex-1">
-                            Liên kết
+                            Links
                         </div>
                     </div>
                 </el-collapse-item>
 
-                <el-collapse-item title="Quyền riêng tư và hỗ trợ" name="4">
+                <el-collapse-item title="Privacy and support" name="4">
                     <div class="flex flex-row items-center cursor-pointer mb-2">
                         <span class="bg-gray-200 p-1 rounded-full h-8 w-8 flex justify-center items-center "
                               style="margin-bottom: -1px">
                             <svg-icons name="icon-NonNofi" size="25" color="none"/>
                         </span>
                         <div class="mb-1 ml-2 flex-1">
-                            Tắt thông báo
+<!--                            Tắt thông báo-->
+                            Turn off notifications
                         </div>
                     </div>
 
@@ -187,7 +196,8 @@ watch(chats, async newChats => {
                             <svg-icons name="icon-BlockChat" size="20"/>
                         </div>
                         <div class="mb-1 ml-2 flex-1">
-                            Hạn chế
+<!--                            Hạn chế-->
+                            Restrict
                         </div>
                     </div>
 
@@ -197,7 +207,7 @@ watch(chats, async newChats => {
                                 <svg-icons name="icon-userBlock" size="15" color="#000000"/>
                             </span>
                         <div class="mb-1 ml-2 flex-1">
-                            Chặn
+                            Block
                         </div>
                     </div>
 
@@ -208,10 +218,11 @@ watch(chats, async newChats => {
                             </span>
                         <div class="mb-1 ml-2 flex-1">
                             <div>
-                                Báo cáo
+                                Reports
                             </div>
                             <div style="font-size: 10px">
-                                Đóng góp ý kiến và báo cáo cuộc trò chuyện
+<!--                                Đóng góp ý kiến và báo cáo cuộc trò chuyện-->
+                                Provide feedback and report conversation
                             </div>
                         </div>
                     </div>
