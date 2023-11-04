@@ -4,8 +4,15 @@
 // const appConfig = useAppConfig()
 // const { sayHello } = useUtils();
 // sayHello()
-// const { $sayHello } = useNuxtApp()
+// const { $sayHello } = useNuxtApp();
 // $sayHello("Minh")
+
+const {getUserList} = useAuth();
+const {getMessagesInChat, getChatList} = useChat();
+
+getUserList();
+getChatList();
+getMessagesInChat();
 
 </script>
 

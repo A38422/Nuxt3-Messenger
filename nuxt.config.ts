@@ -1,7 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import {defineNuxtConfig} from "nuxt/config";
 
+// @ts-ignore
 export default defineNuxtConfig({
+    // @ts-ignore
     ssr: false,
     experimental: {
         watcher: "chokidar",
@@ -28,15 +30,15 @@ export default defineNuxtConfig({
             ]
         }
     },
-    $production: {
-        // @ts-ignore
-        routeRules: {
-            '/**': {isr: true}
-        }
-    },
-    $development: {
-        //
-    },
+    // $production: {
+    //     // @ts-ignore
+    //     routeRules: {
+    //         '/**': {isr: true}
+    //     }
+    // },
+    // $development: {
+    //     //
+    // },
     runtimeConfig: {
         app: {
 
@@ -51,13 +53,16 @@ export default defineNuxtConfig({
             measurementId: process.env.MEASUREMENT_ID
         }
     },
-    webpack: {
-        loaders: {
-            vue: {
-                hotReload: true,
-            }
-        }
-    },
+    // webpack: {
+    //     loaders: {
+    //         vue: {
+    //             hotReload: false, // default true
+    //         }
+    //     }
+    // },
+    // vite: {
+    //     define: { 'process.env.DEBUG': false },
+    // },
     alias: {
         // "~": "/<rootDir>",
         // "@": "/<rootDir>",
@@ -67,6 +72,7 @@ export default defineNuxtConfig({
         // "public": "/<rootDir>/public"
     },
     css: ["/assets/main.scss"],
+    plugins: ["@/plugins/firebase.ts"],
     modules: [
         "@nuxt/content",
         "@pinia/nuxt",
@@ -79,5 +85,4 @@ export default defineNuxtConfig({
             autoprefixer: {},
         },
     },
-    components: true
 })

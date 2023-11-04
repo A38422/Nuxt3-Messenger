@@ -9,32 +9,33 @@ const route = useRoute();
 const router = useRouter();
 const chatStore = useChatStore();
 const authStore = useAuthStore();
-const {getChatList} = useChat();
-
-getChatList();
+const {deleteChat} = useChat();
 
 const chats = computed(() => chatStore.$state.chats);
 const user = computed(() => authStore.$state.user);
 const sizeIcon = 25;
 
-const dataTable = ref<any>([]);
+const dataTable = computed({
+    get() {
+        return chats.value && chats.value.length > 0 ? chats.value : [];
+    },
+    set(value) {
+
+    }
+});
+
 const valueInput = ref("");
 const isActive = ref<any>(null);
+const dataTableCopy = ref<any>(null);
 
-watch(chats, (newChats) => {
-    setTimeout(() => {
-        if (newChats && newChats.length > 0) {
-            dataTable.value = newChats.map((item: any) => {
-                return {
-                    ...item,
-                    visibleAction: false,
-                }
-            });
-        } else {
-            dataTable.value = [];
+watch(dataTable, (newValue) => {
+    dataTableCopy.value = newValue && newValue.length > 0 ? newValue.map((item: any) => {
+        return {
+            ...item,
+            visibleAction: false,
         }
-    }, 150);
-}, {deep: true});
+    }) : [];
+});
 
 watch(() => route.query.chatId,
     async newId => {
@@ -58,13 +59,14 @@ const onClickOutside = (item: any) => {
     item.visibleAction = false;
 };
 
-const handleClickItemMoreAction = _.debounce((key: any, item: any) => {
+const handleClickItemMoreAction = _.debounce(async (key: any, item: any) => {
     if (key === "delete") {
         dataTable.value = dataTable.value.filter((i: any) => i.id !== item.id);
+        await deleteChat(item.id);
         return;
     }
 
-    item.action[key] = !item.action[key];
+    // item.action[key] = !item.action[key];
 }, 200);
 
 const filterFriend = (data: any) => {
@@ -113,7 +115,7 @@ const filterFriend = (data: any) => {
         <div v-if="dataTable && dataTable.length > 0"
              class="content__list-message overflow-auto flex-1 p-1.5"
              id="scroll__list-message">
-            <card-message v-for="item in dataTable"
+            <card-message v-for="item in dataTableCopy"
                           :class="isActive === item.id ? 'active' : ''"
                           :key="item.id"
                           :data="filterFriend(item)"

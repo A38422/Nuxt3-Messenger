@@ -20,7 +20,7 @@ const emits = defineEmits(["onChangeRead", "onChangeNotification", "onChangeBloc
 const sizeIcon = 23;
 
 const handleClick = (key : string) => {
-    emits("onClickItem", key)
+    emits("onClickItem", key);
 }
 </script>
 

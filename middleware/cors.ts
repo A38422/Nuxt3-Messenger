@@ -8,5 +8,4 @@ export default defineEventHandler((event) => {
         'X-XSS-Protection': 1
     }
     setHeaders(event, headers)
-
 })
