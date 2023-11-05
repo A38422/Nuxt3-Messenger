@@ -2,24 +2,38 @@
 
 import {Search} from "@element-plus/icons-vue";
 import CardUser from "@/components/friends/card-user.vue";
+import {useLoading} from "@/composables/states";
 
 const router = useRouter();
 const authStore = useAuthStore();
-const {createChat} = useChat();
+const chatStore = useChatStore();
+const {createChat, getMessagesInChat} = useChat();
 
 const user = computed<any>(() => authStore.$state.user);
 const users = computed<any>(() => authStore.$state.userList);
 
 const valueInput = ref("");
+const loading = useLoading();
 
 const handleEnter = () => {
 
 };
 
 const handleCreateChat = async (value: any) => {
+    loading.value = true;
     const result = await createChat(value);
 
-    if (result) await router.push(`/?chatId=${result.id}`);
+    chatStore.setChatID(result.id);
+    getMessagesInChat(result.id);
+
+    await setTimeout(async () => {
+        if (result) await router.push({
+            path: '/',
+            query: {
+                chatId: result.id
+            },
+        });
+    }, 150);
 };
 
 </script>

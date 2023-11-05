@@ -3,7 +3,6 @@
 import _ from "lodash"
 import {CirclePlus, Search, VideoCamera} from "@element-plus/icons-vue";
 import CardMessage from "@/components/chat/list-message/card-message.vue";
-import {useChatStore} from "@/stores/chat";
 
 const route = useRoute();
 const router = useRouter();
@@ -13,29 +12,21 @@ const {deleteChat} = useChat();
 
 const chats = computed(() => chatStore.$state.chats);
 const user = computed(() => authStore.$state.user);
+
 const sizeIcon = 25;
-
-const dataTable = computed({
-    get() {
-        return chats.value && chats.value.length > 0 ? chats.value : [];
-    },
-    set(value) {
-
-    }
-});
 
 const valueInput = ref("");
 const isActive = ref<any>(null);
-const dataTableCopy = ref<any>(null);
+const dataTable = ref<any>([]);
 
-watch(dataTable, (newValue) => {
-    dataTableCopy.value = newValue && newValue.length > 0 ? newValue.map((item: any) => {
+watch(chats, (newValue) => {
+    dataTable.value = newValue && newValue.length > 0 ? newValue.map((item: any) => {
         return {
             ...item,
             visibleAction: false,
         }
     }) : [];
-});
+}, {deep: true, immediate: true});
 
 watch(() => route.query.chatId,
     async newId => {
@@ -59,60 +50,52 @@ const onClickOutside = (item: any) => {
     item.visibleAction = false;
 };
 
-// const handleClickItemMoreAction = _.debounce(async (key: any, item: any) => {
-//     if (key === "delete") {
-//         dataTable.value = dataTable.value.filter((i: any) => i.id !== item.id);
-//         await deleteChat(item.id);
-//         return;
-//     }
-//
-//     // item.action[key] = !item.action[key];
-// }, 200);
-
 const filterFriend = (data: any) => {
-    const temp = data.participants.find((x: any) => x.userID !== user.value.userID);
-    return {
-        ...temp,
-        id: temp.userID,
-        name: temp.userName,
-        avatar: temp.photoUrl,
-        online: temp.lastSeen,
-        time: temp.lastSeen,
-        action: data.action,
-        updatedTime: data.updatedTime,
-        visibleAction: data.visibleAction,
-    };
+    if (data && data.participants && user.value) {
+        const temp = data.participants.find((x: any) => x.userID !== user.value.userID);
+
+        return {
+            ...temp,
+            id: temp.userID,
+            name: temp.userName,
+            avatar: temp.photoUrl,
+            online: temp.lastSeen,
+            time: temp.lastSeen,
+            action: data.action,
+            updatedTime: data.updatedTime,
+            visibleAction: data.visibleAction,
+        };
+    }
 };
 
 const handleClickItemMoreAction = (key: any, item: any) => {
     ElMessageBox.confirm(
-        'Do you wanna delete this chat conversation ?',
+        'Do you wanna delete this chat conversation?',
         'Warning',
         {
             confirmButtonText: 'OK',
             cancelButtonText: 'Cancel',
             type: 'warning',
         }
-    )
-        .then(() => {
-            if (key === "delete") {
-                dataTable.value = dataTable.value.filter((i: any) => i.id !== item.id);
-                deleteChat(item.id);
-                return;
-            }
-                // item.action[key] = !item.action[key];
-            ElMessage({
-                type: 'success',
-                message: 'Delete completed',
-            })
+    ).then(() => {
+        if (key === "delete") {
+            dataTable.value = dataTable.value.filter((i: any) => i.id !== item.id);
+            deleteChat(item.id);
+            return;
+        }
+        // item.action[key] = !item.action[key];
+
+        ElMessage({
+            type: 'success',
+            message: 'Delete completed',
         })
-        .catch(() => {
-            ElMessage({
-                type: 'info',
-                message: 'Delete canceled',
-            })
+    }).catch(() => {
+        ElMessage({
+            type: 'info',
+            message: 'Delete canceled',
         })
-}
+    })
+};
 
 </script>
 
@@ -142,10 +125,10 @@ const handleClickItemMoreAction = (key: any, item: any) => {
             />
         </div>
 
-        <div v-if="dataTable && dataTable.length > 0"
+        <div v-if="dataTable && dataTable.length > 0 && user"
              class="content__list-message overflow-auto flex-1 p-1.5"
              id="scroll__list-message">
-            <card-message v-for="item in dataTableCopy"
+            <card-message v-for="item in dataTable"
                           :class="isActive === item.id ? 'active' : ''"
                           :key="item.id"
                           :data="filterFriend(item)"
@@ -159,7 +142,6 @@ const handleClickItemMoreAction = (key: any, item: any) => {
 
         <div class="cover-bar"></div>
     </div>
-
 
 
 </template>

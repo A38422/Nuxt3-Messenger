@@ -22,11 +22,7 @@ import {
     orderBy, deleteDoc
 } from "firebase/firestore";
 
-import Filter from "bad-words";
-
 const runtimeConfig = useRuntimeConfig();
-
-const nuxtApp = useNuxtApp();
 
 const app = initializeApp({
     apiKey: runtimeConfig.public.apiKey,
@@ -40,11 +36,11 @@ const app = initializeApp({
 
 const $auth = getAuth();
 const $firestore = getFirestore(app);
-const filter = new Filter();
 
 export const useAuth = () => {
     const authStore = useAuthStore();
     const chatStore = useChatStore();
+    const {getChatList, getMessagesInChat} = useChat();
 
     const user = computed(() => authStore.$state.user);
 
@@ -96,6 +92,10 @@ export const useAuth = () => {
                     lastSeen: null
                 });
             }
+
+            getUserList();
+            getChatList();
+            getMessagesInChat();
         } catch (error) {
             console.error("error: ", error);
         }
@@ -411,10 +411,14 @@ export const useChat = () => {
     };
 
     const unsubscribeMessagesInChat = ref<any>(null);
-    const getMessagesInChat = () => {
-        if (chatID.value) {
+    const getMessagesInChat = (id?: any) => {
+        const route = useRoute();
+
+        const temp = id || chatID.value || route.query.chatId;
+
+        if (temp) {
             // @ts-ignore
-            let messagesRef = collection(doc(collection($firestore, "Chats"), chatID.value), "Messages");
+            const messagesRef = collection(doc(collection($firestore, "Chats"), temp), "Messages");
             const messagesQuery = query(messagesRef, orderBy('timestamp', 'desc'));
 
             unsubscribeMessagesInChat.value = onSnapshot(messagesQuery, snapshot => {
@@ -424,6 +428,7 @@ export const useChat = () => {
                         id: messagesRef.id
                     }
                 }).reverse();
+
                 chatStore.setMessages(result);
             }, (error) => {
                 console.error("error: ", error);
@@ -439,7 +444,6 @@ export const useChat = () => {
             await addDoc(messagesRef, {
                 id: messagesRef.id,
                 senderID: user.value.userID,
-                // content: filter.clean(content),
                 content: content,
                 timestamp: serverTimestamp()
             });

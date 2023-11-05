@@ -1,45 +1,57 @@
 <script setup lang="ts">
 import {ChatDotRound, RemoveFilled, Setting, SwitchButton} from "@element-plus/icons-vue";
-import {values} from "lodash";
+import {useLoading} from "~/composables/states";
 
 const route = useRoute();
-const {user, signOut, signIn} = useAuth();
+const {user, signOut, signIn, getUserList} = useAuth();
+// const {getMessagesInChat, getChatList} = useChat();
+//
+// getUserList();
+// getChatList();
+// getMessagesInChat();
+
 const active = computed<string>(() => route.path);
+const loading = useLoading();
+
+console.log(active.value)
 
 const handleClickSignOut = () => {
     ElMessageBox.confirm(
         'Messenger will be sign out your account. Continue?',
-        'Warning',
+        'Confirm',
         {
             confirmButtonText: 'OK',
             cancelButtonText: 'Cancel',
-            type: 'warning',
         }
-    )
-        .then(() => {
-            signOut()
-            ElMessage({
-                type: 'success',
-                message: 'Sign out completed',
-            })
+    ).then(() => {
+        signOut();
+
+        ElMessage({
+            type: 'success',
+            message: 'Sign out completed',
         })
-        .catch(() => {
-            ElMessage({
-                type: 'info',
-                message: 'Sign out canceled',
-            })
+    }).catch(() => {
+        ElMessage({
+            type: 'info',
+            message: 'Sign out canceled',
         })
-}
+    })
+};
+
+const handleLoading = (path: any) => {
+    if (active.value !== path) loading.value = true;
+};
 
 const sizeIcon = 25;
 const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
+
 </script>
 
 <template>
     <!--    <el-container class="w-full h-screen bg-white dark:bg-black dark:text-white">-->
     <el-container class="common-layout h-screen w-full">
         <el-aside width="250px" class="flex flex-col h-full">
-            <NuxtLink to="/" class="block m-4 image__lazy w-fit">
+            <NuxtLink to="/" class="block m-4 image__lazy w-fit" @click="handleLoading('/')">
                 <img src="@/assets/logo.svg" alt="" style="width: 40px; object-fit: cover"/>
             </NuxtLink>
 
@@ -47,7 +59,7 @@ const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-p
                 class="el-menu-vertical flex-1 overflow-auto"
                 :default-active="active"
             >
-                <NuxtLink to="/">
+                <NuxtLink to="/" @click="handleLoading('/')">
                     <el-menu-item index="/">
                         <el-icon :size="sizeIcon">
                             <ChatDotRound/>
@@ -58,7 +70,7 @@ const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-p
                     </el-menu-item>
                 </NuxtLink>
 
-                <NuxtLink to="/friends">
+                <NuxtLink to="/friends" @click="handleLoading('/friends')">
                     <el-menu-item index="/friends">
                         <svg-icons name="icon-friends" :size="sizeIcon" class="mr-1"/>
                         <template #title>
@@ -67,7 +79,7 @@ const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-p
                     </el-menu-item>
                 </NuxtLink>
 
-                <NuxtLink to="/blocks">
+                <NuxtLink to="/blocks" @click="handleLoading('/blocks')">
                     <el-menu-item index="/blocks">
                         <el-icon :size="sizeIcon">
                             <RemoveFilled/>
@@ -78,7 +90,7 @@ const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-p
                     </el-menu-item>
                 </NuxtLink>
 
-                <NuxtLink to="/setting">
+                <NuxtLink to="/setting" @click="handleLoading('/setting')">
                     <el-menu-item index="/setting">
                         <el-icon :size="sizeIcon">
                             <Setting/>
@@ -122,7 +134,7 @@ const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-p
 
         <el-divider direction="vertical"/>
 
-        <el-main>
+        <el-main v-loading="loading">
             <slot/>
         </el-main>
     </el-container>

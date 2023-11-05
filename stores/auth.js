@@ -11,7 +11,7 @@ export const useAuthStore = defineStore('auth', {
     state: () => {
         return {
             user: userLocalStorage(),
-            userList: null,
+            userList: [],
         }
     },
     getters: {
@@ -31,7 +31,7 @@ export const useAuthStore = defineStore('auth', {
             this.$state.userList = data;
         },
         deleteUserList() {
-            this.$state.userList = null;
+            this.$state.userList = [];
         }
     },
 })

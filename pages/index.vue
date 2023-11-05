@@ -7,12 +7,17 @@
 // const { $sayHello } = useNuxtApp();
 // $sayHello("Minh")
 
+import {useLoading} from "@/composables/states";
+
 const {getUserList} = useAuth();
 const {getMessagesInChat, getChatList} = useChat();
 
 getUserList();
 getChatList();
 getMessagesInChat();
+
+const loading = useLoading();
+loading.value = false;
 
 </script>
 
