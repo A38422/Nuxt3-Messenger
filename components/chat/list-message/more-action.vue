@@ -56,9 +56,10 @@ const handleClick = (key : string) => {
             <el-icon :size="sizeIcon" class="mr-2">
                 <Delete/>
             </el-icon>
-            <span>Delete chat</span>
+            <span> Delete chat </span>
         </div>
     </div>
+
 </template>
 
 <style scoped lang="scss">

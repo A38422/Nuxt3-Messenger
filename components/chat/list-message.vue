@@ -59,15 +59,15 @@ const onClickOutside = (item: any) => {
     item.visibleAction = false;
 };
 
-const handleClickItemMoreAction = _.debounce(async (key: any, item: any) => {
-    if (key === "delete") {
-        dataTable.value = dataTable.value.filter((i: any) => i.id !== item.id);
-        await deleteChat(item.id);
-        return;
-    }
-
-    // item.action[key] = !item.action[key];
-}, 200);
+// const handleClickItemMoreAction = _.debounce(async (key: any, item: any) => {
+//     if (key === "delete") {
+//         dataTable.value = dataTable.value.filter((i: any) => i.id !== item.id);
+//         await deleteChat(item.id);
+//         return;
+//     }
+//
+//     // item.action[key] = !item.action[key];
+// }, 200);
 
 const filterFriend = (data: any) => {
     const temp = data.participants.find((x: any) => x.userID !== user.value.userID);
@@ -83,6 +83,36 @@ const filterFriend = (data: any) => {
         visibleAction: data.visibleAction,
     };
 };
+
+const handleClickItemMoreAction = (key: any, item: any) => {
+    ElMessageBox.confirm(
+        'Do you wanna delete this chat conversation ?',
+        'Warning',
+        {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            type: 'warning',
+        }
+    )
+        .then(() => {
+            if (key === "delete") {
+                dataTable.value = dataTable.value.filter((i: any) => i.id !== item.id);
+                deleteChat(item.id);
+                return;
+            }
+                // item.action[key] = !item.action[key];
+            ElMessage({
+                type: 'success',
+                message: 'Delete completed',
+            })
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: 'Delete canceled',
+            })
+        })
+}
 
 </script>
 
@@ -129,6 +159,9 @@ const filterFriend = (data: any) => {
 
         <div class="cover-bar"></div>
     </div>
+
+
+
 </template>
 
 <style lang="scss" src="@/assets/chat/list-message.scss"/>
