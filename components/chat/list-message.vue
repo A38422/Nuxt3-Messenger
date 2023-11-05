@@ -15,27 +15,18 @@ const chats = computed(() => chatStore.$state.chats);
 const user = computed(() => authStore.$state.user);
 const sizeIcon = 25;
 
-const dataTable = computed({
-    get() {
-        return chats.value && chats.value.length > 0 ? chats.value : [];
-    },
-    set(value) {
-
-    }
-});
-
 const valueInput = ref("");
 const isActive = ref<any>(null);
-const dataTableCopy = ref<any>(null);
+const dataTable = ref<any>([]);
 
-watch(dataTable, (newValue) => {
-    dataTableCopy.value = newValue && newValue.length > 0 ? newValue.map((item: any) => {
+watch(chats, (newValue) => {
+    dataTable.value = newValue && newValue.length > 0 ? newValue.map((item: any) => {
         return {
             ...item,
             visibleAction: false,
         }
     }) : [];
-});
+}, {deep: true, immediate: true});
 
 watch(() => route.query.chatId,
     async newId => {
@@ -70,18 +61,21 @@ const handleClickItemMoreAction = _.debounce(async (key: any, item: any) => {
 }, 200);
 
 const filterFriend = (data: any) => {
-    const temp = data.participants.find((x: any) => x.userID !== user.value.userID);
-    return {
-        ...temp,
-        id: temp.userID,
-        name: temp.userName,
-        avatar: temp.photoUrl,
-        online: temp.lastSeen,
-        time: temp.lastSeen,
-        action: data.action,
-        updatedTime: data.updatedTime,
-        visibleAction: data.visibleAction,
-    };
+    if (data && data.participants && user.value) {
+        const temp = data.participants.find((x: any) => x.userID !== user.value.userID);
+
+        return {
+            ...temp,
+            id: temp.userID,
+            name: temp.userName,
+            avatar: temp.photoUrl,
+            online: temp.lastSeen,
+            time: temp.lastSeen,
+            action: data.action,
+            updatedTime: data.updatedTime,
+            visibleAction: data.visibleAction,
+        };
+    }
 };
 
 </script>
@@ -112,10 +106,10 @@ const filterFriend = (data: any) => {
             />
         </div>
 
-        <div v-if="dataTable && dataTable.length > 0"
+        <div v-if="dataTable && dataTable.length > 0 && user"
              class="content__list-message overflow-auto flex-1 p-1.5"
              id="scroll__list-message">
-            <card-message v-for="item in dataTableCopy"
+            <card-message v-for="item in dataTable"
                           :class="isActive === item.id ? 'active' : ''"
                           :key="item.id"
                           :data="filterFriend(item)"
