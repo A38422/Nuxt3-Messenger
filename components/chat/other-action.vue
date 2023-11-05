@@ -1,7 +1,5 @@
 <script setup lang="ts">
 
-import {useChatStore} from "@/stores/chat";
-
 const route = useRoute();
 const authStore = useAuthStore();
 const chatStore = useChatStore();
@@ -14,24 +12,24 @@ const chatId = ref<any>(null);
 
 watch(() => route.query.chatId,
     newId => {
-        if (newId) {
-            chatId.value = newId;
-            if (chats.value.find((i: any) => i.id === newId)) {
-                data.value = chats.value.find((i: any) => i.id === newId).participants
-                    .find((x: any) => x.userID !== user.value.userID);
-            }
+        chatId.value = newId;
+        if (chatId.value && chats.value.find((i: any) => i.id === newId)) {
+            data.value = chats.value.find((i: any) => i.id === newId).participants
+                .find((x: any) => x.userID !== user.value.userID);
+        } else {
+            data.value = null;
         }
     }, {immediate: true}
 );
 
 watch(chats, async newChats => {
-    if (chatId.value) {
-        if (newChats.find((i: any) => i.id === chatId.value)) {
-            data.value = newChats.find((i: any) => i.id === chatId.value).participants
-                .find((x: any) => x.userID !== user.value.userID);
-        }
+    if (chatId.value && newChats.find((i: any) => i.id === chatId.value)) {
+        data.value = newChats.find((i: any) => i.id === chatId.value).participants
+            .find((x: any) => x.userID !== user.value.userID);
+    } else {
+        data.value = null;
     }
-}, {deep: true});
+}, {deep: true, immediate: true});
 
 </script>
 
@@ -232,6 +230,7 @@ watch(chats, async newChats => {
 </template>
 
 <style lang="scss">
+
 .demo-collapse {
     .el-collapse {
         border: none;

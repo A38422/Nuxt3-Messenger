@@ -1,5 +1,10 @@
 <script setup lang="ts">
 
+import {useLoading} from "@/composables/states";
+
+const loading = useLoading();
+loading.value = false;
+
 </script>
 
 <template>

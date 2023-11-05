@@ -8,19 +8,15 @@ const {sendMessage, getMessagesInChat} = useChat();
 const user = computed<any>(() => authStore.$state.user);
 const chats = computed<any>(() => chatStore.$state.chats);
 const messages = computed<any>(() => chatStore.$state.messages);
-const friend = computed({
-    get() {
-        return chats.value.find((i: any) => i.id === chatId.value) ?
-            chats.value.find((i: any) => i.id === chatId.value).participants.find((x: any) => x.userID !== user.value.userID)
-            : null;
-    },
-    set(value) {
-
-    },
-});
 
 const bottom = ref(null);
-const chatId = ref<any>(null);
+const friend = ref<any>(null);
+
+watch(chats, (newValue) => {
+    friend.value = user.value && newValue && newValue.length > 0 && newValue.find((i: any) => i.id === chatStore.$state.chatID) ?
+        newValue.find((i: any) => i.id === chatStore.$state.chatID).participants.find((x: any) => x.userID !== user.value.userID)
+        : null;
+}, {deep: true, immediate: true});
 
 watch(
     messages,
@@ -36,7 +32,6 @@ watch(
 
 watch(() => route.query.chatId,
     newId => {
-        chatId.value = newId;
         chatStore.setChatID(newId);
         getMessagesInChat();
     }, {immediate: true}

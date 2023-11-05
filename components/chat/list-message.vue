@@ -3,7 +3,6 @@
 import _ from "lodash"
 import {CirclePlus, Search, VideoCamera} from "@element-plus/icons-vue";
 import CardMessage from "@/components/chat/list-message/card-message.vue";
-import {useChatStore} from "@/stores/chat";
 
 const route = useRoute();
 const router = useRouter();
@@ -13,6 +12,7 @@ const {deleteChat} = useChat();
 
 const chats = computed(() => chatStore.$state.chats);
 const user = computed(() => authStore.$state.user);
+
 const sizeIcon = 25;
 
 const valueInput = ref("");
@@ -50,16 +50,6 @@ const onClickOutside = (item: any) => {
     item.visibleAction = false;
 };
 
-// const handleClickItemMoreAction = _.debounce(async (key: any, item: any) => {
-//     if (key === "delete") {
-//         dataTable.value = dataTable.value.filter((i: any) => i.id !== item.id);
-//         await deleteChat(item.id);
-//         return;
-//     }
-//
-//     // item.action[key] = !item.action[key];
-// }, 200);
-
 const filterFriend = (data: any) => {
     if (data && data.participants && user.value) {
         const temp = data.participants.find((x: any) => x.userID !== user.value.userID);
@@ -80,33 +70,32 @@ const filterFriend = (data: any) => {
 
 const handleClickItemMoreAction = (key: any, item: any) => {
     ElMessageBox.confirm(
-        'Do you wanna delete this chat conversation ?',
+        'Do you wanna delete this chat conversation?',
         'Warning',
         {
             confirmButtonText: 'OK',
             cancelButtonText: 'Cancel',
             type: 'warning',
         }
-    )
-        .then(() => {
-            if (key === "delete") {
-                dataTable.value = dataTable.value.filter((i: any) => i.id !== item.id);
-                deleteChat(item.id);
-                return;
-            }
-                // item.action[key] = !item.action[key];
-            ElMessage({
-                type: 'success',
-                message: 'Delete completed',
-            })
+    ).then(() => {
+        if (key === "delete") {
+            dataTable.value = dataTable.value.filter((i: any) => i.id !== item.id);
+            deleteChat(item.id);
+            return;
+        }
+        // item.action[key] = !item.action[key];
+
+        ElMessage({
+            type: 'success',
+            message: 'Delete completed',
         })
-        .catch(() => {
-            ElMessage({
-                type: 'info',
-                message: 'Delete canceled',
-            })
+    }).catch(() => {
+        ElMessage({
+            type: 'info',
+            message: 'Delete canceled',
         })
-}
+    })
+};
 
 </script>
 
@@ -153,7 +142,6 @@ const handleClickItemMoreAction = (key: any, item: any) => {
 
         <div class="cover-bar"></div>
     </div>
-
 
 
 </template>
