@@ -1,10 +1,35 @@
 <script setup lang="ts">
 import {ChatDotRound, RemoveFilled, Setting, SwitchButton} from "@element-plus/icons-vue";
+import {values} from "lodash";
 
 const route = useRoute();
-const { user, signOut, signIn } = useAuth();
-
+const {user, signOut, signIn} = useAuth();
 const active = computed<string>(() => route.path);
+
+const handleClickSignOut = () => {
+    ElMessageBox.confirm(
+        'Messenger will be sign out your account. Continue?',
+        'Warning',
+        {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            type: 'warning',
+        }
+    )
+        .then(() => {
+            signOut()
+            ElMessage({
+                type: 'success',
+                message: 'Sign out completed',
+            })
+        })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: 'Sign out canceled',
+            })
+        })
+}
 
 const sizeIcon = 25;
 const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
@@ -17,7 +42,7 @@ const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-p
             <NuxtLink to="/" class="block m-4 image__lazy w-fit">
                 <img src="@/assets/logo.svg" alt="" style="width: 40px; object-fit: cover"/>
             </NuxtLink>
-            
+
             <el-menu
                 class="el-menu-vertical flex-1 overflow-auto"
                 :default-active="active"
@@ -32,7 +57,7 @@ const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-p
                         </template>
                     </el-menu-item>
                 </NuxtLink>
-                
+
                 <NuxtLink to="/friends">
                     <el-menu-item index="/friends">
                         <svg-icons name="icon-friends" :size="sizeIcon" class="mr-1"/>
@@ -41,7 +66,7 @@ const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-p
                         </template>
                     </el-menu-item>
                 </NuxtLink>
-                
+
                 <NuxtLink to="/blocks">
                     <el-menu-item index="/blocks">
                         <el-icon :size="sizeIcon">
@@ -52,7 +77,7 @@ const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-p
                         </template>
                     </el-menu-item>
                 </NuxtLink>
-                
+
                 <NuxtLink to="/setting">
                     <el-menu-item index="/setting">
                         <el-icon :size="sizeIcon">
@@ -64,9 +89,9 @@ const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-p
                     </el-menu-item>
                 </NuxtLink>
             </el-menu>
-            
+
             <div class="item-menu__logout">
-                <div v-if="user" class="flex items-center justify-between" @click="signOut">
+                <div v-if="user" class="flex items-center justify-between" @click="handleClickSignOut">
                     <div class="flex items-center">
                         <el-avatar
                             :src="user.photoUrl"
@@ -74,12 +99,12 @@ const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-p
                             class="border"
                             fit="cover"
                         />
-                        <span class="ml-3 font-semibold text-lg">{{user.userName}}</span>
+                        <span class="ml-3 font-semibold text-lg">{{ user.userName }}</span>
                     </div>
-
                     <el-icon :size="sizeIcon">
                         <SwitchButton/>
                     </el-icon>
+
                 </div>
                 <div v-else class="flex items-center justify-between" @click="signIn">
                     <div class="flex items-center">
@@ -94,9 +119,9 @@ const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-p
                 </div>
             </div>
         </el-aside>
-        
+
         <el-divider direction="vertical"/>
-        
+
         <el-main>
             <slot/>
         </el-main>
@@ -127,12 +152,12 @@ const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-p
     width: 100%;
     padding: 10px 20px;
     cursor: pointer;
-    
+
     &:hover {
         background: var(--el-menu-hover-bg-color);
         transition: border-color var(--el-transition-duration),
-                    background-color var(--el-transition-duration),
-                    color var(--el-transition-duration);
+        background-color var(--el-transition-duration),
+        color var(--el-transition-duration);
     }
 }
 </style>
