@@ -1,6 +1,5 @@
 <script setup lang="ts">
 
-import _ from "lodash"
 import {CirclePlus, Search, VideoCamera} from "@element-plus/icons-vue";
 import CardMessage from "@/components/chat/list-message/card-message.vue";
 
@@ -12,6 +11,7 @@ const {deleteChat} = useChat();
 
 const chats = computed(() => chatStore.$state.chats);
 const user = computed(() => authStore.$state.user);
+const users = computed(() => authStore.$state.userList);
 
 const sizeIcon = 25;
 
@@ -35,7 +35,17 @@ watch(() => route.query.chatId,
 );
 
 const handleChange = (value: any) => {
-    dataTable.value = dataTable.value.filter((item: any) => item.participant.userName.toLowerCase().includes(value.toLowerCase()))
+    dataTable.value = chats.value && chats.value.length > 0 ? chats.value
+        .filter((i: any) => {
+            return i.participants.find((x: any) => x.userID !== user.value.userID
+                && x.userName.toLowerCase().includes(value.toLowerCase()));
+        })
+        .map((o: any) => {
+        return {
+            ...o,
+            visibleAction: false,
+        }
+    }) : [];
 };
 
 const handleClickItem = (value: any) => {
@@ -52,7 +62,9 @@ const onClickOutside = (item: any) => {
 
 const filterFriend = (data: any) => {
     if (data && data.participants && user.value) {
-        const temp = data.participants.find((x: any) => x.userID !== user.value.userID);
+        const friend = data.participants.find((x: any) => x.userID !== user.value.userID);
+
+        const temp: any = users.value.find((i: any) => i.userID === friend.userID);
 
         return {
             ...temp,
@@ -60,7 +72,7 @@ const filterFriend = (data: any) => {
             name: temp.userName,
             avatar: temp.photoUrl,
             online: temp.lastSeen,
-            time: temp.lastSeen,
+            Messages: data.Messages,
             action: data.action,
             updatedTime: data.updatedTime,
             visibleAction: data.visibleAction,

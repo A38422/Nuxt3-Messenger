@@ -2,7 +2,8 @@ import {initializeApp} from "firebase/app";
 import {
     getAuth,
     GoogleAuthProvider,
-    signInWithPopup
+    signInWithPopup,
+    onAuthStateChanged
 } from 'firebase/auth';
 import {
     collection,
@@ -19,8 +20,12 @@ import {
     arrayRemove,
     getDocs,
     where,
-    orderBy, deleteDoc
+    orderBy,
+    deleteDoc,
 } from "firebase/firestore";
+// @ts-ignores
+import {v4 as uuidv4} from 'uuid';
+
 
 const runtimeConfig = useRuntimeConfig();
 
@@ -43,6 +48,13 @@ export const useAuth = () => {
     const {getChatList, getMessagesInChat} = useChat();
 
     const user = computed(() => authStore.$state.user);
+
+    onAuthStateChanged($auth, async _user => {
+        if (_user) {
+            await updateLastSeenTime("online");
+        }
+    });
+
 
     const signIn = async () => {
         const googleProvider = new GoogleAuthProvider();
@@ -93,9 +105,10 @@ export const useAuth = () => {
                 });
             }
 
+            await updateLastSeenTime("online");
             getUserList();
             getChatList();
-            getMessagesInChat();
+            // getMessagesInChat();
         } catch (error) {
             console.error("error: ", error);
         }
@@ -103,8 +116,10 @@ export const useAuth = () => {
 
     const updateNotificationSettings = async (notificationSetting: Boolean) => {
         try {
-            const userRef = doc(collection($firestore, "Users"), user.value.userID);
-            await updateDoc(userRef, {notificationSettings: notificationSetting});
+            if (user.value) {
+                const userRef = doc(collection($firestore, "Users"), user.value.userID);
+                await updateDoc(userRef, {notificationSettings: notificationSetting});
+            }
         } catch (error) {
             console.log("error: ", error);
         }
@@ -112,13 +127,16 @@ export const useAuth = () => {
 
     const blockUser = async (blockedUserID: any) => {
         try {
-            const userRef = doc(collection($firestore, "Users"), user.value.userID);
-            await updateDoc(userRef, {blockedUsers: arrayUnion(blockedUserID)})
+            if (user.value) {
+                const userRef = doc(collection($firestore, "Users"), user.value.userID);
+                await updateDoc(userRef, {blockedUsers: arrayUnion(blockedUserID)})
 
-            authStore.setUser({
-                ...user.value,
-                blockedUsers: [...user.value.blockedUsers, blockedUserID]
-            });
+                authStore.setUser({
+                    ...user.value,
+                    blockedUsers: [...user.value.blockedUsers, blockedUserID]
+                });
+            }
+
         } catch (error) {
             console.log("error: ", error);
         }
@@ -126,51 +144,57 @@ export const useAuth = () => {
 
     const unblockUser = async (unBlockedUserID: any) => {
         try {
-            const userRef = doc(collection($firestore, "Users"), user.value.userID);
-            await updateDoc(userRef, {blockedUsers: arrayRemove(unBlockedUserID)})
+            if (user.value) {
+                const userRef = doc(collection($firestore, "Users"), user.value.userID);
+                await updateDoc(userRef, {blockedUsers: arrayRemove(unBlockedUserID)})
 
-            authStore.setUser({
-                ...user.value,
-                blockedUsers: user.value.blockedUsers.filter((i: any) => i !== unBlockedUserID)
-            });
+                authStore.setUser({
+                    ...user.value,
+                    blockedUsers: user.value.blockedUsers.filter((i: any) => i !== unBlockedUserID)
+                });
+            }
         } catch (error) {
             console.log("error: ", error);
         }
     };
 
-    const updateLastSeenTime = async () => {
+    const updateLastSeenTime = async (status?: any) => {
         try {
-            const userRef = doc(collection($firestore, "Users"), user.value.userID);
+            if (user.value) {
+                const userRef = doc(collection($firestore, "Users"), user.value.userID);
 
-            const lastSeenTime = new Date();
+                const lastSeenTime = status || new Date();
 
-            await updateDoc(userRef, {lastSeen: lastSeenTime});
+                await updateDoc(userRef, {lastSeen: lastSeenTime});
 
-            authStore.setUser({
-                ...user.value,
-                lastSeen: lastSeenTime
-            });
+                authStore.setUser({
+                    ...user.value,
+                    lastSeen: lastSeenTime
+                });
+            }
         } catch (error) {
             console.error("error: ", error);
         }
     };
 
-    const checkUserOnlineStatus = async () => {
-        const userRef = doc(collection($firestore, "Users"), user.value.userID);
+    const checkUserOnlineStatus = () => {
+        if (user.value) {
+            const userRef = doc(collection($firestore, "Users"), user.value.userID);
 
-        return onSnapshot(userRef, snapshot => {
-            const lastSeen = snapshot.data()?.lastSeen;
+            return onSnapshot(userRef, snapshot => {
+                const lastSeen = snapshot.data()?.lastSeen;
 
-            if (lastSeen) {
-                // @ts-ignore
-                const timeAgo = new Date() - lastSeen;
+                if (lastSeen) {
+                    // @ts-ignore
+                    const timeAgo = new Date() - lastSeen;
 
-                return timeAgo < 5 * 60 * 1000;
-            }
-        }, (error) => {
-            console.error("error: ", error);
-            return false;
-        });
+                    return timeAgo < 5 * 60 * 1000;
+                }
+            }, (error) => {
+                console.error("error: ", error);
+                return false;
+            });
+        }
     };
 
     const sendFriendRequest = async (receiverID: any) => {
@@ -212,34 +236,38 @@ export const useAuth = () => {
 
     const addFriendToFriendList = async (friendID: any) => {
         try {
-            const userRef = doc(collection($firestore, "Users"), user.value.userID);
-            const userDoc = await getDoc(userRef);
+            if (user.value) {
+                const userRef = doc(collection($firestore, "Users"), user.value.userID);
+                const userDoc = await getDoc(userRef);
 
-            const friendRef = doc(collection($firestore, "Users"), friendID);
-            const friendDoc = await getDoc(friendID);
+                const friendRef = doc(collection($firestore, "Users"), friendID);
+                const friendDoc = await getDoc(friendID);
 
-            await updateDoc(userRef, {friendList: arrayUnion(friendDoc.data())});
-            await updateDoc(friendRef, {friendList: arrayUnion(userDoc.data())});
+                await updateDoc(userRef, {friendList: arrayUnion(friendDoc.data())});
+                await updateDoc(friendRef, {friendList: arrayUnion(userDoc.data())});
 
-            authStore.setUser({
-                ...user.value,
-                friendList: [...user.value.friendList, friendDoc.data()]
-            });
+                authStore.setUser({
+                    ...user.value,
+                    friendList: [...user.value.friendList, friendDoc.data()]
+                });
+            }
         } catch (error) {
             console.error("error: ", error);
         }
     };
 
     const getFriendList = async () => {
-        const friendList = ref<any>([]);
+        let friendList: any = [];
 
-        const userRef = doc(collection($firestore, "Users"), user.value.userID);
+        if (user.value) {
+            const userRef = doc(collection($firestore, "Users"), user.value.userID);
 
-        await getDoc(userRef).then((querySnapshot) => {
-            friendList.value = querySnapshot.data()?.friendList || [];
-        }, error => {
-            console.log("error: ", error);
-        })
+            await getDoc(userRef).then((querySnapshot) => {
+                friendList = querySnapshot.data()?.friendList || [];
+            }, error => {
+                console.log("error: ", error);
+            })
+        }
 
         return friendList;
     };
@@ -252,11 +280,12 @@ export const useAuth = () => {
         const userRef = collection($firestore, "Users");
 
         unsubscribeUserList.value = onSnapshot(userRef, snapshot => {
-            const result = snapshot.docs.map(i => i.data()).filter(o => {
-                return user.value.userID !== o.userID;
-            });
-
-            authStore.setUserList(result);
+            if (user.value) {
+                const result = snapshot.docs.map(i => i.data()).filter(o => {
+                    return user.value.userID !== o.userID;
+                });
+                authStore.setUserList(result);
+            }
         }, (error) => {
             console.error("error: ", error);
         });
@@ -269,13 +298,15 @@ export const useAuth = () => {
     const getBlockedUsersList = async () => {
         const blockedList = ref<any>([]);
 
-        const userRef = doc(collection($firestore, "Users"), user.value.userID);
+        if (user.value) {
+            const userRef = doc(collection($firestore, "Users"), user.value.userID);
 
-        await getDoc(userRef).then((querySnapshot) => {
-            blockedList.value = querySnapshot.data()?.blockedUsers || [];
-        }, error => {
-            console.log("error: ", error);
-        })
+            await getDoc(userRef).then((querySnapshot) => {
+                blockedList.value = querySnapshot.data()?.blockedUsers || [];
+            }, error => {
+                console.log("error: ", error);
+            })
+        }
 
         return blockedList;
     };
@@ -291,6 +322,10 @@ export const useAuth = () => {
             console.error("error: ", error);
         });
     };
+
+    window.addEventListener('beforeunload', (event) => {
+        updateLastSeenTime();
+    });
 
     return {
         user,
@@ -439,14 +474,24 @@ export const useChat = () => {
     const sendMessage = async (chatID: any, content: any) => {
         if (!user.value) return;
 
-        const messagesRef = collection(doc(collection($firestore, "Chats"), chatID), "Messages");
+        // const messagesRef = collection(doc(collection($firestore, "Chats"), chatID), "Messages");
         try {
-            await addDoc(messagesRef, {
-                id: messagesRef.id,
-                senderID: user.value.userID,
-                content: content,
-                timestamp: serverTimestamp()
-            });
+            const messageRef = doc(collection($firestore, "Chats"), chatID);
+            await setDoc(messageRef, {
+                Messages: arrayUnion({
+                    id: uuidv4(),
+                    senderID: user.value.userID,
+                    content: content,
+                    timestamp: new Date()
+                })
+            }, {merge: true})
+
+            // await addDoc(messagesRef, {
+            //     id: messagesRef.id,
+            //     senderID: user.value.userID,
+            //     content: content,
+            //     timestamp: serverTimestamp()
+            // });
         } catch (e) {
             console.error("error: ", e);
         }
@@ -466,4 +511,5 @@ export const useChat = () => {
         getMessagesInChat,
         updateChatNotificationSettings,
     }
+
 };

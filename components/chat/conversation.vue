@@ -6,17 +6,41 @@ const chatStore = useChatStore();
 const {sendMessage, getMessagesInChat} = useChat();
 
 const user = computed<any>(() => authStore.$state.user);
+const users = computed<any>(() => authStore.$state.userList);
 const chats = computed<any>(() => chatStore.$state.chats);
-const messages = computed<any>(() => chatStore.$state.messages);
 
 const bottom = ref(null);
 const friend = ref<any>(null);
+const messages = ref<any>([]);
 
 watch(chats, (newValue) => {
-    friend.value = user.value && newValue && newValue.length > 0 && newValue.find((i: any) => i.id === chatStore.$state.chatID) ?
-        newValue.find((i: any) => i.id === chatStore.$state.chatID).participants.find((x: any) => x.userID !== user.value.userID)
-        : null;
+    if (chatStore.$state.chatID && newValue.find((i: any) => i.id === chatStore.$state.chatID)) {
+        // get friend
+        const temp = newValue.find((i: any) => i.id === chatStore.$state.chatID).participants
+            .find((x: any) => x.userID !== user.value.userID);
+        friend.value = users.value.find((i: any) => i.userID === temp.userID);
+
+        // get messages
+        messages.value = newValue.find((i: any) => i.id === chatStore.$state.chatID).Messages;
+    } else {
+        friend.value = null;
+    }
 }, {deep: true, immediate: true});
+
+watch(users, async newUsers => {
+    if (chatStore.$state.chatID && chats.value.find((i: any) => i.id === chatStore.$state.chatID)) {
+        // get friend
+        const temp = chats.value.find((i: any) => i.id === chatStore.$state.chatID).participants
+            .find((x: any) => x.userID !== user.value.userID);
+        friend.value = newUsers.find((i: any) => i.userID === temp.userID);
+
+        // get messages
+        messages.value = chats.value.find((i: any) => i.id === chatStore.$state.chatID).Messages;
+    } else {
+        friend.value = null;
+        messages.value = [];
+    }
+}, {deep: true});
 
 watch(
     messages,
@@ -26,6 +50,15 @@ watch(
             // bottom.value?.scrollIntoView({behavior: 'smooth'})
             bottom.value?.scrollIntoView();
         });
+
+        // get friend
+        if (chatStore.$state.chatID && chats.value.find((i: any) => i.id === chatStore.$state.chatID)) {
+            const temp = chats.value.find((i: any) => i.id === chatStore.$state.chatID).participants
+                .find((x: any) => x.userID !== user.value.userID);
+            friend.value = users.value.find((i: any) => i.userID === temp.userID);
+        } else {
+            friend.value = null;
+        }
     },
     {deep: true}
 )
@@ -33,7 +66,13 @@ watch(
 watch(() => route.query.chatId,
     newId => {
         chatStore.setChatID(newId);
-        getMessagesInChat();
+
+        // get messages
+        if (chatStore.$state.chatID && chats.value.find((i: any) => i.id === chatStore.$state.chatID)) {
+            messages.value = chats.value.find((i: any) => i.id === chatStore.$state.chatID).Messages;
+        } else {
+            messages.value = [];
+        }
     }, {immediate: true}
 )
 

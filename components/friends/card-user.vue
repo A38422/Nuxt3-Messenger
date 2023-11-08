@@ -47,14 +47,15 @@ const handleCreateChat = (item: any) => {
 
         <div class="p-1 pt-3 flex flex-col justify-center">
             <p class="font-semibold text-center mb-3">{{user?.userName}}</p>
-            <div class="flex">
-                <el-button @click="handleClick">
-                    Add friend
-                </el-button>
+            <div class="flex justify-center">
+<!--                <el-button @click="handleClick">-->
+<!--                    Add friend-->
+<!--                </el-button>-->
                 <el-button @click="handleCreateChat">
-                    <el-icon :size="20">
+                    <el-icon :size="20" class="mr-2">
                         <ChatDotRound/>
                     </el-icon>
+                    Chat
                 </el-button>
             </div>
         </div>
@@ -62,7 +63,5 @@ const handleCreateChat = (item: any) => {
 </template>
 
 <style scoped lang="scss">
-.box-card {
 
-}
 </style>

@@ -1,19 +1,16 @@
 <script setup lang="ts">
 import {ChatDotRound, RemoveFilled, Setting, SwitchButton} from "@element-plus/icons-vue";
-import {useLoading} from "~/composables/states";
+import {useLoading} from "@/composables/states";
 
 const route = useRoute();
 const {user, signOut, signIn, getUserList} = useAuth();
-// const {getMessagesInChat, getChatList} = useChat();
+const {getChatList} = useChat();
 //
-// getUserList();
-// getChatList();
-// getMessagesInChat();
+getUserList();
+getChatList();
 
 const active = computed<string>(() => route.path);
 const loading = useLoading();
-
-console.log(active.value)
 
 const handleClickSignOut = () => {
     ElMessageBox.confirm(
