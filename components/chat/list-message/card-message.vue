@@ -1,7 +1,9 @@
 <script setup lang="ts">
+
 import {MoreFilled, MuteNotification} from "@element-plus/icons-vue";
 import {ClickOutside as vClickOutside} from 'element-plus';
 import MoreAction from "@/components/chat/list-message/more-action.vue";
+import moment from "moment/moment";
 
 const emits = defineEmits(["onClickOutside", "onClickMoreAction", "onClickItemMoreAction"]);
 const props = defineProps({
@@ -12,13 +14,16 @@ const props = defineProps({
             name: "",
             avatar: "",
             time: "",
-            messages: "",
+            Messages: [],
+            online: null,
             action: null,
-            online: false,
             visibleAction: false
         }
     },
 });
+
+const authStore = useAuthStore();
+const user = computed(() => authStore.$state.user);
 
 const popoverRef = ref();
 
@@ -33,12 +38,20 @@ const onClickOutside = () => {
 const handleClickItemMoreAction = (key: string) => {
     emits("onClickItemMoreAction", key);
 };
+
+const convertTimestamp = (value: any) => {
+    if (value) {
+        return moment(value.seconds * 1000).utcOffset(0).fromNow();
+    }
+    return "";
+};
+
 </script>
 
 <template>
     <div class="item__list-message flex items-center"
          v-click-outside="onClickOutside">
-        <el-badge :is-dot="data.online" class="dot-badge mr-4">
+        <el-badge :is-dot="data.online === 'online'" class="dot-badge mr-4">
             <el-avatar
                 :src="data.avatar"
                 :size="45"
@@ -50,14 +63,16 @@ const handleClickItemMoreAction = (key: string) => {
             <p class="name__item__list-massage font-medium text-ellipsis whitespace-nowrap overflow-hidden">
                 {{ data.name }}
             </p>
-            <div class="font-light text-sm text-gray-500 flex items-center"
+            <div v-if="data.Messages && data.Messages.length > 0"
+                 class="font-light text-sm text-gray-500 flex items-center"
                  :class="data?.action?.read ? 'font-semibold text-black' : ''">
-                <span v-if="data.messages && data.messages.length > 0"
+                <span v-if="data.Messages && data.Messages.length > 0"
                       class="message__item__list-message text-ellipsis whitespace-nowrap overflow-hidden">
-                    {{ data.messages[data.messages.length - 1].content }}
+                    {{ (user && user.userID === data.Messages[data.Messages.length - 1].senderID ? "You: " : "")
+                        + data.Messages[data.Messages.length - 1].content }}
                 </span>
-                <span v-if="data.messages && data.messages.length > 0" class="mx-1"> • </span>
-                <span>{{ data.time }}</span>
+                <span class="mx-1"> • </span>
+                <span>{{ convertTimestamp(data.Messages[data.Messages.length - 1].timestamp) }}</span>
             </div>
         </div>
 

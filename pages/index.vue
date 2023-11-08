@@ -1,40 +1,38 @@
 <script setup lang="ts">
 
-// const runtimeConfig = useRuntimeConfig()
-// const appConfig = useAppConfig()
-// const { sayHello } = useUtils();
-// sayHello()
-// const { $sayHello } = useNuxtApp();
-// $sayHello("Minh")
-
 import {useLoading} from "@/composables/states";
 
-const {getUserList} = useAuth();
-const {getMessagesInChat, getChatList} = useChat();
-
-getUserList();
-getChatList();
-getMessagesInChat();
-
+const {$bus} = useNuxtApp();
 const loading = useLoading();
+
 loading.value = false;
+
+const visible = ref(true);
+
+$bus.on("onClickMoreInfo", () => {
+    visible.value = !visible.value;
+});
+
+onUnmounted(() => {
+    $bus.off("onClickMoreInfo");
+});
 
 </script>
 
 <template>
-    <el-row class="w-full h-full">
-        <el-col :span="6" class="border-r-2 border-r-gray-100 h-full w-full">
+    <div class="w-full h-full flex">
+        <div class="border-r-2 border-r-gray-100 h-full">
             <ChatListMessage/>
-        </el-col>
+        </div>
 
-        <el-col :span="12" class="border-r-2 border-r-gray-100 h-full w-full">
+        <div class="border-r-2 border-r-gray-100 h-full flex-1">
             <ChatConversation/>
-        </el-col>
+        </div>
 
-        <el-col :span="6" class="h-full w-full">
+        <div v-if="visible" class="h-full w-96 2xl:block sm:hidden">
             <ChatOtherAction/>
-        </el-col>
-    </el-row>
+        </div>
+    </div>
 </template>
 
 <style lang="scss" scoped>

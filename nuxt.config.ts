@@ -72,7 +72,6 @@ export default defineNuxtConfig({
         // "public": "/<rootDir>/public"
     },
     css: ["/assets/main.scss"],
-    plugins: ["@/plugins/firebase.ts"],
     modules: [
         "@nuxt/content",
         "@pinia/nuxt",

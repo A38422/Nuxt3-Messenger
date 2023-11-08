@@ -1,4 +1,9 @@
 <script setup lang="ts">
+
+import moment from "moment";
+
+const {$bus} = useNuxtApp();
+
 const props = defineProps({
     avatar: {
         type: String,
@@ -13,6 +18,21 @@ const props = defineProps({
         default: null
     }
 });
+
+const convertTimestamp = (data: any) => {
+    if (data) {
+        if (data === "online") return "Active now";
+        else if (data)
+            return "Active " + moment(data.seconds * 1000).utcOffset(0).fromNow();
+        else return "";
+    }
+    return "";
+};
+
+const handleClickInfo = () => {
+    $bus.emit("onClickMoreInfo");
+};
+
 </script>
 
 <template>
@@ -27,7 +47,7 @@ const props = defineProps({
 
         <div>
             <p class="text-sm font-semibold">{{ name }}</p>
-<!--            <p class="text-xs">{{ active }}</p>-->
+            <p class="text-xs">{{ convertTimestamp(active) }}</p>
         </div>
     </div>
 
@@ -36,7 +56,7 @@ const props = defineProps({
 
         <svg-icons name="icon-camera" size="22" color="#2563eb" class="cursor-pointer"/>
 
-        <svg-icons name="icon-info" size="22" color="#2563eb" class="cursor-pointer"/>
+        <svg-icons name="icon-info" size="22" color="#2563eb" class="cursor-pointer" @click="handleClickInfo"/>
     </div>
 </template>
 
