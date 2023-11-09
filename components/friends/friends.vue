@@ -14,11 +14,21 @@ const loading = useLoading();
 
 const user = computed<any>(() => authStore.$state.user);
 const users = computed<any>(() => authStore.$state.userList);
+const friends = computed<any>(() => authStore.$state.friendList);
 
 const valueInput = ref("");
 const activeName = ref("friends");
+const dataTable = ref<any>([]);
 
-const handleEnter = () => {
+watch(friends, newValue => {
+    if (user.value && activeName.value === "friends") {
+        dataTable.value = newValue.map((i: any) => {
+            return users.value.find((x: any) => x.userID === i);
+        });
+    }
+}, {deep: true, immediate: true})
+
+const handleSearch = () => {
 
 };
 
@@ -39,69 +49,126 @@ const handleCreateChat = async (value: any) => {
 };
 
 const handleClick = (tab: TabsPaneContext, event: Event) => {
-    // console.log(tab, event)
+    if (activeName.value === tab.paneName || !user.value) return;
+
+    switch (tab.paneName) {
+        case "friends":
+            dataTable.value = friends.value.map((i: any) => {
+                return users.value.find((x: any) => x.userID === i);
+            });
+            break;
+        case "friends-request":
+            dataTable.value = [];
+            break;
+        case "invitation-sent":
+            dataTable.value = [];
+            break;
+        case "other":
+            dataTable.value = [...users.value];
+            break;
+    }
+};
+
+const handleAddFriend = () => {
+
+};
+
+const handleUnfriend = () => {
+
+};
+
+const handleAccepted = () => {
+
+};
+
+const handleRejected = () => {
+
+};
+
+const handleCancelRequest = () => {
+
 };
 
 </script>
 
 <template>
-    <div v-if="user" class="w-full h-full flex flex-col p-5">
+    <div class="w-full h-full flex flex-col p-5">
         <div class="flex items-center justify-between pb-1">
             <p class="font-semibold text-xl">Friends</p>
             <div class="input-search__list-message w-1/4">
                 <el-input v-model="valueInput"
-                          class=""
                           placeholder="Search"
                           size="large"
                           :prefix-icon="Search"
-                          @keyup.enter="handleEnter"/>
+                          @keyup.enter="handleSearch"/>
             </div>
         </div>
 
         <el-tabs v-model="activeName" class="w-full" @tab-click="handleClick">
             <el-tab-pane label="All friends" name="friends">
-                <div class="w-full overflow-auto flex flex-wrap gap-4">
-                    <card-user v-for="item in users"
+                <div v-if="user && dataTable && dataTable.length > 0"
+                     class="w-full overflow-auto flex flex-wrap gap-4">
+                    <card-user v-for="item in dataTable"
                                :key="item.userID"
                                :user="item"
                                @on-create-chat="handleCreateChat">
+                        <el-button @click="handleUnfriend">
+                            Unfriend
+                        </el-button>
                     </card-user>
                 </div>
+                <NuxtLayout v-else name="error" class="flex items-center"/>
             </el-tab-pane>
 
             <el-tab-pane label="Friend requests" name="friends-request">
-                <div class="w-full overflow-auto flex flex-wrap gap-4">
-                    <card-user v-for="item in users"
+                <div v-if="user && dataTable && dataTable.length > 0"
+                     class="w-full overflow-auto flex flex-wrap gap-4">
+                    <card-user v-for="item in dataTable"
                                :key="item.userID"
                                :user="item"
                                @on-create-chat="handleCreateChat">
+                        <el-button @click="handleAccepted">
+                            Accept
+                        </el-button>
+                        <el-button @click="handleRejected">
+                            Reject
+                        </el-button>
                     </card-user>
                 </div>
+                <NuxtLayout v-else name="error" class="flex items-center"/>
             </el-tab-pane>
 
             <el-tab-pane label="Invitation sent" name="invitation-sent">
-                <div class="w-full overflow-auto flex flex-wrap gap-4">
-                    <card-user v-for="item in users"
+                <div v-if="user && dataTable && dataTable.length > 0"
+                     class="w-full overflow-auto flex flex-wrap gap-4">
+                    <card-user v-for="item in dataTable"
                                :key="item.userID"
                                :user="item"
                                @on-create-chat="handleCreateChat">
+                        <el-button @click="handleCancelRequest">
+                            Cancel request
+                        </el-button>
                     </card-user>
                 </div>
+                <NuxtLayout v-else name="error" class="flex items-center"/>
             </el-tab-pane>
 
-            <el-tab-pane label="Other" name="Other">
-                <div class="w-full overflow-auto flex flex-wrap gap-4">
+            <el-tab-pane label="Other" name="other">
+                <div v-if="user && dataTable && dataTable.length > 0"
+                     class="w-full overflow-auto flex flex-wrap gap-4">
                     <card-user v-for="item in users"
                                :key="item.userID"
                                :user="item"
                                @on-create-chat="handleCreateChat">
+                        <el-button @click="handleAddFriend">
+                            Add friend
+                        </el-button>
                     </card-user>
                 </div>
+                <NuxtLayout v-else name="error" class="flex items-center"/>
             </el-tab-pane>
         </el-tabs>
     </div>
-
-    <NuxtLayout v-else name="error" class="w-full h-full flex flex-col"/>
 </template>
 
 <style scoped lang="scss">

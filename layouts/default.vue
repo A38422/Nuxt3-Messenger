@@ -3,13 +3,14 @@ import {ChatDotRound, RemoveFilled, Setting, SwitchButton} from "@element-plus/i
 import {useLoading} from "@/composables/states";
 
 const route = useRoute();
-const {user, signOut, signIn, getUserList} = useAuth();
+const {user, signOut, signIn, getUserList, updateLastSeenTime} = useAuth();
 const {getChatList} = useChat();
-//
-getUserList();
-getChatList();
+
+const sizeIcon = 25;
+const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
 
 const active = computed<string>(() => route.path);
+
 const loading = useLoading();
 
 const handleClickSignOut = () => {
@@ -39,8 +40,12 @@ const handleLoading = (path: any) => {
     if (active.value !== path) loading.value = true;
 };
 
-const sizeIcon = 25;
-const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
+getUserList();
+getChatList();
+
+onBeforeUnmount(() => {
+    updateLastSeenTime();
+});
 
 </script>
 

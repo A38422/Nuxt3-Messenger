@@ -41,11 +41,11 @@ const handleChange = (value: any) => {
                 && x.userName.toLowerCase().includes(value.toLowerCase()));
         })
         .map((o: any) => {
-        return {
-            ...o,
-            visibleAction: false,
-        }
-    }) : [];
+            return {
+                ...o,
+                visibleAction: false,
+            }
+        }) : [];
 };
 
 const handleClickItem = (value: any) => {
@@ -81,32 +81,33 @@ const filterFriend = (data: any) => {
 };
 
 const handleClickItemMoreAction = (key: any, item: any) => {
-    ElMessageBox.confirm(
-        'Do you wanna delete this chat conversation?',
-        'Warning',
-        {
-            confirmButtonText: 'OK',
-            cancelButtonText: 'Cancel',
-            type: 'warning',
-        }
-    ).then(() => {
-        if (key === "delete") {
+    if (key === "delete") {
+        ElMessageBox.confirm(
+            'Do you wanna delete this chat conversation?',
+            'Warning',
+            {
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancel',
+                type: 'warning',
+            }
+        ).then(() => {
             dataTable.value = dataTable.value.filter((i: any) => i.id !== item.id);
             deleteChat(item.id);
-            return;
-        }
-        // item.action[key] = !item.action[key];
 
-        ElMessage({
-            type: 'success',
-            message: 'Delete completed',
-        })
-    }).catch(() => {
-        ElMessage({
-            type: 'info',
-            message: 'Delete canceled',
-        })
-    })
+            ElMessage({
+                type: 'success',
+                message: 'Delete completed',
+            })
+        }).catch(() => {
+            ElMessage({
+                type: 'info',
+                message: 'Delete canceled',
+            })
+        });
+        return;
+    }
+
+    item.action[key] = !item.action[key];
 };
 
 </script>
