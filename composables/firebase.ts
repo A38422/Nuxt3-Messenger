@@ -70,6 +70,7 @@ export const useAuth = () => {
         await updateLastSeenTime();
         await authStore.deleteUser();
         await authStore.deleteUserList();
+        await authStore.deleteFriendList();
         await chatStore.clearChat();
         await $auth.signOut();
     };
@@ -115,52 +116,51 @@ export const useAuth = () => {
     };
 
     const updateNotificationSettings = async (notificationSetting: Boolean) => {
+        if (!user.value) return;
+
         try {
-            if (user.value) {
-                const userRef = doc(collection($firestore, "Users"), user.value.userID);
-                await updateDoc(userRef, {notificationSettings: notificationSetting});
-            }
+            const userRef = doc(collection($firestore, "Users"), user.value.userID);
+            await updateDoc(userRef, {notificationSettings: notificationSetting});
         } catch (error) {
             console.log("error: ", error);
         }
     };
 
     const blockUser = async (blockedUserID: any) => {
+        if (!user.value) return;
+
         try {
-            if (user.value) {
-                const userRef = doc(collection($firestore, "Users"), user.value.userID);
-                await updateDoc(userRef, {blockedUsers: arrayUnion(blockedUserID)})
+            const userRef = doc(collection($firestore, "Users"), user.value.userID);
+            await updateDoc(userRef, {blockedUsers: arrayUnion(blockedUserID)})
 
-                authStore.setUser({
-                    ...user.value,
-                    blockedUsers: [...user.value.blockedUsers, blockedUserID]
-                });
-            }
-
+            authStore.setUser({
+                ...user.value,
+                blockedUsers: [...user.value.blockedUsers, blockedUserID]
+            });
         } catch (error) {
             console.log("error: ", error);
         }
     };
 
     const unblockUser = async (unBlockedUserID: any) => {
-        try {
-            if (user.value) {
-                const userRef = doc(collection($firestore, "Users"), user.value.userID);
-                await updateDoc(userRef, {blockedUsers: arrayRemove(unBlockedUserID)})
+        if (!user.value) return;
 
-                authStore.setUser({
-                    ...user.value,
-                    blockedUsers: user.value.blockedUsers.filter((i: any) => i !== unBlockedUserID)
-                });
-            }
+        try {
+            const userRef = doc(collection($firestore, "Users"), user.value.userID);
+            await updateDoc(userRef, {blockedUsers: arrayRemove(unBlockedUserID)})
+
+            authStore.setUser({
+                ...user.value,
+                blockedUsers: user.value.blockedUsers.filter((i: any) => i !== unBlockedUserID)
+            });
         } catch (error) {
             console.log("error: ", error);
         }
     };
 
     const updateLastSeenTime = async (status?: any) => {
-        try {
-            if (user.value) {
+        if (user.value) {
+            try {
                 const userRef = doc(collection($firestore, "Users"), user.value.userID);
 
                 const lastSeenTime = status || new Date();
@@ -171,33 +171,15 @@ export const useAuth = () => {
                     ...user.value,
                     lastSeen: lastSeenTime
                 });
-            }
-        } catch (error) {
-            console.error("error: ", error);
-        }
-    };
-
-    const checkUserOnlineStatus = () => {
-        if (user.value) {
-            const userRef = doc(collection($firestore, "Users"), user.value.userID);
-
-            return onSnapshot(userRef, snapshot => {
-                const lastSeen = snapshot.data()?.lastSeen;
-
-                if (lastSeen) {
-                    // @ts-ignore
-                    const timeAgo = new Date() - lastSeen;
-
-                    return timeAgo < 5 * 60 * 1000;
-                }
-            }, (error) => {
+            } catch (error) {
                 console.error("error: ", error);
-                return false;
-            });
+            }
         }
     };
 
     const sendFriendRequest = async (receiverID: any) => {
+        if (!user.value) return;
+
         try {
             const friendRequestsCollection = collection($firestore, "FriendRequests");
 
@@ -212,6 +194,8 @@ export const useAuth = () => {
     };
 
     const acceptFriendRequest = async (requestID: any) => {
+        if (!user.value) return;
+
         try {
             const friendRequestRef = doc(collection($firestore, "FriendRequests"), requestID);
             const friendRequestDoc = await getDoc(friendRequestRef);
@@ -225,6 +209,8 @@ export const useAuth = () => {
     };
 
     const rejectFriendRequest = async (requestID: any) => {
+        if (!user.value) return;
+
         try {
             const friendRequestRef = doc(collection($firestore, "FriendRequests"), requestID);
 
@@ -235,41 +221,38 @@ export const useAuth = () => {
     };
 
     const addFriendToFriendList = async (friendID: any) => {
+        if (!user.value) return;
+
         try {
-            if (user.value) {
-                const userRef = doc(collection($firestore, "Users"), user.value.userID);
-                const userDoc = await getDoc(userRef);
+            const userRef = doc(collection($firestore, "Users"), user.value.userID);
+            const friendRef = doc(collection($firestore, "Users"), friendID);
 
-                const friendRef = doc(collection($firestore, "Users"), friendID);
-                const friendDoc = await getDoc(friendID);
+            await updateDoc(userRef, {friendList: arrayUnion(friendID)});
+            await updateDoc(friendRef, {friendList: arrayUnion(user.value.userID)});
 
-                await updateDoc(userRef, {friendList: arrayUnion(friendDoc.data())});
-                await updateDoc(friendRef, {friendList: arrayUnion(userDoc.data())});
-
-                authStore.setUser({
-                    ...user.value,
-                    friendList: [...user.value.friendList, friendDoc.data()]
-                });
-            }
+            authStore.setUser({
+                ...user.value,
+                friendList: [...user.value.friendList, friendID]
+            });
         } catch (error) {
             console.error("error: ", error);
         }
     };
 
-    const getFriendList = async () => {
-        let friendList: any = [];
+    const unsubscribeFriendList = ref<any>(null);
+    const getFriendList = () => {
+        if (!user.value) return;
 
-        if (user.value) {
-            const userRef = doc(collection($firestore, "Users"), user.value.userID);
+        const userRef = doc(collection($firestore, "Users"), user.value.userID);
 
-            await getDoc(userRef).then((querySnapshot) => {
-                friendList = querySnapshot.data()?.friendList || [];
-            }, error => {
-                console.log("error: ", error);
-            })
-        }
-
-        return friendList;
+        unsubscribeFriendList.value = onSnapshot(userRef, snapshot => {
+            if (user.value) {
+                const result = snapshot.data()?.friendList || [];
+                authStore.setFriendList(result);
+            }
+        }, (error) => {
+            console.error("error: ", error);
+        });
     };
 
     const unsubscribeUserList = ref<any>(null);
@@ -290,10 +273,6 @@ export const useAuth = () => {
             console.error("error: ", error);
         });
     };
-
-    onUnmounted(() => {
-        unsubscribeUserList.value?.();
-    });
 
     const getBlockedUsersList = async () => {
         const blockedList = ref<any>([]);
@@ -323,6 +302,11 @@ export const useAuth = () => {
         });
     };
 
+    onUnmounted(() => {
+        unsubscribeUserList.value?.();
+        unsubscribeFriendList.value?.();
+    });
+
     window.addEventListener('beforeunload', (event) => {
         updateLastSeenTime();
     });
@@ -339,7 +323,6 @@ export const useAuth = () => {
         unblockUser,
         updateLastSeenTime,
         updateNotificationSettings,
-        checkUserOnlineStatus,
         getUserList,
         getFriendList,
         getBlockedUsersList,

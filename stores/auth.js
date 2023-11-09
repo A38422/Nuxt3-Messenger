@@ -12,11 +12,13 @@ export const useAuthStore = defineStore('auth', {
         return {
             user: userLocalStorage(),
             userList: [],
+            friendList: [],
         }
     },
     getters: {
         getUser: state => state.user,
         getUserList: state => state.userList,
+        getFriendList: state => state.friendList,
     },
     actions: {
         setUser(data) {
@@ -32,6 +34,12 @@ export const useAuthStore = defineStore('auth', {
         },
         deleteUserList() {
             this.$state.userList = [];
+        },
+        setFriendList(data) {
+            this.$state.friendList = data;
+        },
+        deleteFriendList() {
+            this.$state.friendList = [];
         }
     },
 })
