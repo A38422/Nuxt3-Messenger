@@ -24,6 +24,16 @@ const props = defineProps({
 
 const authStore = useAuthStore();
 const user = computed(() => authStore.$state.user);
+const className = () => {
+    if (props.data?.action.read) {
+        if (user && user.value.userID === props.data.Messages[props.data.Messages.length - 1].senderID) {
+            return "";
+        }
+        return 'font-semibold text-black';
+    }
+    return "";
+
+};
 
 const popoverRef = ref();
 
@@ -65,7 +75,7 @@ const convertTimestamp = (value: any) => {
             </p>
             <div v-if="data.Messages && data.Messages.length > 0"
                  class="font-light text-sm text-gray-500 flex items-center"
-                 :class="data?.action?.read ? 'font-semibold text-black' : ''">
+                 :class="className">
                 <span v-if="data.Messages && data.Messages.length > 0"
                       class="message__item__list-message text-ellipsis whitespace-nowrap overflow-hidden">
                     {{ (user && user.userID === data.Messages[data.Messages.length - 1].senderID ? "You: " : "")

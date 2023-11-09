@@ -1,5 +1,7 @@
 <script setup lang="ts">
 
+import moment from "moment";
+
 const route = useRoute();
 const authStore = useAuthStore();
 const chatStore = useChatStore();
@@ -60,7 +62,7 @@ watch(
             friend.value = null;
         }
     },
-    {deep: true}
+    {deep: true, immediate: true}
 )
 
 watch(() => route.query.chatId,
@@ -82,6 +84,29 @@ const send = (value: String) => {
     }
 };
 
+const checkTimeVisible = (index: any) => {
+    if (messages.value[index] && messages.value[index - 1]) {
+        const timeDifference = Math.abs(messages.value[index].timestamp.seconds * 1000 - messages.value[index - 1].timestamp.seconds * 1000);
+        const fiveMinutesInMilliseconds = 5 * 60 * 1000;
+
+        return timeDifference > fiveMinutesInMilliseconds;
+    }
+    return true;
+};
+
+const formatDate = (value: any) => {
+    if (value && value.seconds)
+        return moment(+value.seconds * 1000).format('ddd h:mm A');
+    return "";
+};
+
+onUnmounted(() => {
+    messages.value = [];
+    bottom.value = null;
+    friend.value = null;
+    chatStore.setChatID(null);
+});
+
 </script>
 
 <template>
@@ -92,14 +117,15 @@ const send = (value: String) => {
 
         <div v-if="messages && messages.length > 0" class="chat-body p-4 flex-1 overflow-auto h-full">
             <ChatConversationMessage
-                v-for="{ id, content, senderID, timestamp } in messages"
+                v-for="({ id, content, senderID, timestamp }, index) in messages"
                 :key="id"
                 :time="timestamp"
                 :name="friend?.userName"
+                :content="content"
                 :photo-url="friend?.photoUrl"
                 :sender="senderID === user.userID"
             >
-                {{ content }}
+                <p v-if="checkTimeVisible(index)" class="p-4 text-center text-sm text-gray-500">{{ formatDate(timestamp) }}</p>
             </ChatConversationMessage>
 
             <div ref="bottom"></div>
