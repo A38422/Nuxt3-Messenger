@@ -3,7 +3,7 @@ import {ChatDotRound, RemoveFilled, Setting, SwitchButton} from "@element-plus/i
 import {useLoading} from "@/composables/states";
 
 const route = useRoute();
-const {user, signOut, signIn, getUserList, updateLastSeenTime} = useAuth();
+const {user, signOut, signIn, getUserList, getFriendList, getFriendRequest, updateLastSeenTime} = useAuth();
 const {getChatList} = useChat();
 
 const sizeIcon = 25;
@@ -42,6 +42,8 @@ const handleLoading = (path: any) => {
 
 getUserList();
 getChatList();
+getFriendList();
+getFriendRequest();
 
 onBeforeUnmount(() => {
     updateLastSeenTime();

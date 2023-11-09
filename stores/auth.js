@@ -13,12 +13,14 @@ export const useAuthStore = defineStore('auth', {
             user: userLocalStorage(),
             userList: [],
             friendList: [],
+            friendRequest: [],
         }
     },
     getters: {
         getUser: state => state.user,
         getUserList: state => state.userList,
         getFriendList: state => state.friendList,
+        getFriendRequest: state => state.friendRequest,
     },
     actions: {
         setUser(data) {
@@ -40,6 +42,12 @@ export const useAuthStore = defineStore('auth', {
         },
         deleteFriendList() {
             this.$state.friendList = [];
+        },
+        setFriendRequest(data) {
+            this.$state.friendRequest = data;
+        },
+        deleteFriendRequest() {
+            this.$state.friendRequest = [];
         }
     },
 })
