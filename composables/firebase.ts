@@ -71,6 +71,7 @@ export const useAuth = () => {
         await authStore.deleteUser();
         await authStore.deleteUserList();
         await authStore.deleteFriendList();
+        await authStore.deleteFriendRequest();
         await chatStore.clearChat();
         await $auth.signOut();
     };
@@ -201,8 +202,9 @@ export const useAuth = () => {
             const friendRequestDoc = await getDoc(friendRequestRef);
             const data = friendRequestDoc.data();
 
-            await updateDoc(friendRequestRef, {status: "accepted"});
-            await addFriendToFriendList(data?.receiverID);
+            // await updateDoc(friendRequestRef, {status: "accepted"});
+            await deleteDoc(friendRequestRef);
+            await addFriendToFriendList(data?.senderID);
         } catch (error) {
             console.error("error: ", error);
         }
@@ -214,7 +216,7 @@ export const useAuth = () => {
         try {
             const friendRequestRef = doc(collection($firestore, "FriendRequests"), requestID);
 
-            await updateDoc(friendRequestRef, {status: "rejected"});
+            await deleteDoc(friendRequestRef);
         } catch (error) {
             console.error("error: ", error);
         }
@@ -233,6 +235,46 @@ export const useAuth = () => {
             authStore.setUser({
                 ...user.value,
                 friendList: [...user.value.friendList, friendID]
+            });
+        } catch (error) {
+            console.error("error: ", error);
+        }
+    };
+
+    const unFriend = async (friendID: any) => {
+        if (!user.value) return;
+
+        try {
+            const userRef = doc(collection($firestore, "Users"), user.value.userID);
+            const friendRef = doc(collection($firestore, "Users"), friendID);
+
+            await updateDoc(userRef, {friendList: arrayRemove(friendID)});
+            await updateDoc(friendRef, {friendList: arrayRemove(user.value.userID)});
+
+            authStore.setUser({
+                ...user.value,
+                friendList: user.value.friendList.filter((i: any) => i.userID !== friendID)
+            });
+        } catch (error) {
+            console.error("error: ", error);
+        }
+    };
+
+    const unsubscribeFriendRequest = ref<any>(null);
+    const getFriendRequest = async () => {
+        if (!user.value) return;
+
+        try {
+            const friendRequestsCollection = collection($firestore, "FriendRequests");
+
+            unsubscribeFriendRequest.value = onSnapshot(friendRequestsCollection, snapshot => {
+                const result = snapshot.docs.map(i => {
+                    return {
+                        ...i.data(),
+                        id: i.id,
+                    }
+                });
+                authStore.setFriendRequest(result);
             });
         } catch (error) {
             console.error("error: ", error);
@@ -305,6 +347,7 @@ export const useAuth = () => {
     onUnmounted(() => {
         unsubscribeUserList.value?.();
         unsubscribeFriendList.value?.();
+        unsubscribeFriendRequest.value?.();
     });
 
     window.addEventListener('beforeunload', (event) => {
@@ -315,14 +358,15 @@ export const useAuth = () => {
         user,
         signIn,
         signOut,
-        addFriendToFriendList,
         acceptFriendRequest,
         rejectFriendRequest,
         sendFriendRequest,
+        unFriend,
         blockUser,
         unblockUser,
         updateLastSeenTime,
         updateNotificationSettings,
+        getFriendRequest,
         getUserList,
         getFriendList,
         getBlockedUsersList,

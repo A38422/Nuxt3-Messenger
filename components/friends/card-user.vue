@@ -1,7 +1,5 @@
 <script setup lang="ts">
 
-import {ChatDotRound} from "@element-plus/icons-vue";
-
 const props = defineProps({
     user: {
         type: Object,
@@ -11,8 +9,8 @@ const props = defineProps({
             userName: "",
             photoUrl: "",
             lastSeen: "",
-            friendList: "",
-            blockedUsers: "",
+            friendList: [],
+            blockedUsers: [],
             notificationSettings: "",
         }
     }
@@ -21,11 +19,12 @@ const props = defineProps({
 const emits = defineEmits(["onClick", "onCreateChat"])
 
 const bodyStyle = {
-    width: '200px',
+    maxWidth: "230px",
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    padding: "20px 10px"
 };
 
 const handleClick = () => {
@@ -38,7 +37,7 @@ const handleCreateChat = (item: any) => {
 </script>
 
 <template>
-    <el-card :body-style="bodyStyle" shadow="never">
+    <el-card :body-style="bodyStyle" shadow="never" class="card-user">
         <el-avatar
             :src="user?.photoUrl"
             :size="120"
@@ -47,7 +46,7 @@ const handleCreateChat = (item: any) => {
 
         <div class="p-1 pt-3 flex flex-col justify-center">
             <p class="font-semibold text-center mb-3">{{user?.userName}}</p>
-            <div class="flex justify-center">
+            <div class="flex justify-center flex-wrap items-center gap-1">
                 <slot/>
                 <el-button @click="handleCreateChat">
                     Chat
@@ -57,6 +56,10 @@ const handleCreateChat = (item: any) => {
     </el-card>
 </template>
 
-<style scoped lang="scss">
-
+<style lang="scss">
+.card-user {
+    .el-button {
+        margin: 0;
+    }
+}
 </style>

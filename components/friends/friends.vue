@@ -8,6 +8,7 @@ import type {TabsPaneContext} from "element-plus";
 const router = useRouter();
 const authStore = useAuthStore();
 const chatStore = useChatStore();
+const {sendFriendRequest, acceptFriendRequest, rejectFriendRequest, unFriend} = useAuth();
 const {createChat} = useChat();
 
 const loading = useLoading();
@@ -15,6 +16,7 @@ const loading = useLoading();
 const user = computed<any>(() => authStore.$state.user);
 const users = computed<any>(() => authStore.$state.userList);
 const friends = computed<any>(() => authStore.$state.friendList);
+const friendRequest = computed<any>(() => authStore.$state.friendRequest);
 
 const valueInput = ref("");
 const activeName = ref("friends");
@@ -58,35 +60,67 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
             });
             break;
         case "friends-request":
-            dataTable.value = [];
+            const request = users.value.filter((i: any) => {
+                return friendRequest.value.find((o: any) => o.receiverID === user.value.userID && o.status === "pending" && o.senderID === i.userID);
+            });
+            dataTable.value = [...request];
             break;
         case "invitation-sent":
-            dataTable.value = [];
+            const invitation = users.value.filter((i: any) => {
+                return friendRequest.value.find((o: any) => o.receiverID === i.userID && o.status === "pending" && o.senderID === user.value.userID);
+            });
+            dataTable.value = [...invitation];
             break;
         case "other":
-            dataTable.value = [...users.value];
+            const other = users.value.filter((i: any) => {
+                return !friendRequest.value.find((o: any) => o.receiverID === i.userID && o.status === "pending");
+            });
+            dataTable.value = [...other.filter((i: any) => !friends.value.find((o: any) => o === i.userID))];
             break;
     }
 };
 
-const handleAddFriend = () => {
+const handleAddFriend = (receiverID: any) => {
+    const request = friendRequest.value.find((i: any) => i.receiverID === user.value.userID && i.senderID === receiverID);
 
+    if (request && request.id) {
+        acceptFriendRequest(request.id);
+    } else {
+        sendFriendRequest(receiverID);
+    }
+    dataTable.value = dataTable.value.filter((i:any) => i.userID !== receiverID);
 };
 
-const handleUnfriend = () => {
-
+const handleUnfriend = (receiverID: any) => {
+    unFriend(receiverID);
+    dataTable.value = dataTable.value.filter((i:any) => i.userID !== receiverID);
 };
 
-const handleAccepted = () => {
+const handleAccepted = (receiverID: any) => {
+    const request = friendRequest.value.find((i: any) => i.receiverID === user.value.userID && i.senderID === receiverID);
 
+    if (request && request.id) {
+        acceptFriendRequest(request.id);
+        dataTable.value = dataTable.value.filter((i:any) => i.userID !== receiverID);
+    }
 };
 
-const handleRejected = () => {
+const handleRejected = (receiverID: any) => {
+    const request = friendRequest.value.find((i: any) => i.receiverID === user.value.userID && i.senderID === receiverID);
 
+    if (request && request.id) {
+        rejectFriendRequest(request.id);
+        dataTable.value = dataTable.value.filter((i:any) => i.userID !== receiverID);
+    }
 };
 
-const handleCancelRequest = () => {
+const handleCancelRequest = (receiverID: any) => {
+    const request = friendRequest.value.find((i: any) => i.receiverID === receiverID && i.senderID === user.value.userID);
 
+    if (request && request.id) {
+        rejectFriendRequest(request.id);
+        dataTable.value = dataTable.value.filter((i:any) => i.userID !== receiverID);
+    }
 };
 
 </script>
@@ -112,7 +146,7 @@ const handleCancelRequest = () => {
                                :key="item.userID"
                                :user="item"
                                @on-create-chat="handleCreateChat">
-                        <el-button @click="handleUnfriend">
+                        <el-button @click="handleUnfriend(item.userID)">
                             Unfriend
                         </el-button>
                     </card-user>
@@ -127,10 +161,10 @@ const handleCancelRequest = () => {
                                :key="item.userID"
                                :user="item"
                                @on-create-chat="handleCreateChat">
-                        <el-button @click="handleAccepted">
+                        <el-button @click="handleAccepted(item.userID)" >
                             Accept
                         </el-button>
-                        <el-button @click="handleRejected">
+                        <el-button @click="handleRejected(item.userID)">
                             Reject
                         </el-button>
                     </card-user>
@@ -145,7 +179,7 @@ const handleCancelRequest = () => {
                                :key="item.userID"
                                :user="item"
                                @on-create-chat="handleCreateChat">
-                        <el-button @click="handleCancelRequest">
+                        <el-button @click="handleCancelRequest(item.userID)">
                             Cancel request
                         </el-button>
                     </card-user>
@@ -156,11 +190,11 @@ const handleCancelRequest = () => {
             <el-tab-pane label="Other" name="other">
                 <div v-if="user && dataTable && dataTable.length > 0"
                      class="w-full overflow-auto flex flex-wrap gap-4">
-                    <card-user v-for="item in users"
+                    <card-user v-for="item in dataTable"
                                :key="item.userID"
                                :user="item"
                                @on-create-chat="handleCreateChat">
-                        <el-button @click="handleAddFriend">
+                        <el-button @click="handleAddFriend(item.userID)">
                             Add friend
                         </el-button>
                     </card-user>
