@@ -8,7 +8,7 @@ const route = useRoute();
 const router = useRouter();
 const chatStore = useChatStore();
 const authStore = useAuthStore();
-const {deleteChat} = useChat();
+const {deleteChat, updateChat} = useChat();
 const loading = useLoading();
 
 const chats = computed(() => chatStore.$state.chats);
@@ -31,8 +31,15 @@ watch(chats, (newValue) => {
 }, {deep: true, immediate: true});
 
 watch(() => route.query.chatId,
-    async newId => {
+    newId => {
         isActive.value = newId;
+
+        if (newId) {
+            updateChat(newId, {
+                read: false,
+                notification: false
+            });
+        }
     }, {immediate: true}
 );
 
