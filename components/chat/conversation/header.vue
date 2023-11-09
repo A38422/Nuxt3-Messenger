@@ -23,7 +23,7 @@ const convertTimestamp = (data: any) => {
     if (data) {
         if (data === "online") return "Active now";
         else if (data)
-            return "Active " + moment(data.seconds * 1000).utcOffset(0).fromNow();
+            return "Active " + moment(+data.seconds * 1000).fromNow();
         else return "";
     }
     return "";

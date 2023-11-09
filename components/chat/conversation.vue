@@ -3,7 +3,7 @@
 const route = useRoute();
 const authStore = useAuthStore();
 const chatStore = useChatStore();
-const {sendMessage, getMessagesInChat} = useChat();
+const {sendMessage} = useChat();
 
 const user = computed<any>(() => authStore.$state.user);
 const users = computed<any>(() => authStore.$state.userList);
@@ -17,7 +17,7 @@ watch(chats, (newValue) => {
     if (chatStore.$state.chatID && newValue.find((i: any) => i.id === chatStore.$state.chatID)) {
         // get friend
         const temp = newValue.find((i: any) => i.id === chatStore.$state.chatID).participants
-            .find((x: any) => x.userID !== user.value.userID);
+            .find((x: any) => user.value && x.userID !== user.value.userID);
         friend.value = users.value.find((i: any) => i.userID === temp.userID);
 
         // get messages
@@ -31,7 +31,7 @@ watch(users, async newUsers => {
     if (chatStore.$state.chatID && chats.value.find((i: any) => i.id === chatStore.$state.chatID)) {
         // get friend
         const temp = chats.value.find((i: any) => i.id === chatStore.$state.chatID).participants
-            .find((x: any) => x.userID !== user.value.userID);
+            .find((x: any) => user.value && x.userID !== user.value.userID);
         friend.value = newUsers.find((i: any) => i.userID === temp.userID);
 
         // get messages
@@ -54,7 +54,7 @@ watch(
         // get friend
         if (chatStore.$state.chatID && chats.value.find((i: any) => i.id === chatStore.$state.chatID)) {
             const temp = chats.value.find((i: any) => i.id === chatStore.$state.chatID).participants
-                .find((x: any) => x.userID !== user.value.userID);
+                .find((x: any) => user.value && x.userID !== user.value.userID);
             friend.value = users.value.find((i: any) => i.userID === temp.userID);
         } else {
             friend.value = null;
@@ -92,9 +92,9 @@ const send = (value: String) => {
 
         <div v-if="messages && messages.length > 0" class="chat-body p-4 flex-1 overflow-auto h-full">
             <ChatConversationMessage
-                v-for="{ id, content, senderID, time } in messages"
+                v-for="{ id, content, senderID, timestamp } in messages"
                 :key="id"
-                :time="time"
+                :time="timestamp"
                 :name="friend?.userName"
                 :photo-url="friend?.photoUrl"
                 :sender="senderID === user.userID"

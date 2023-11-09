@@ -2,12 +2,14 @@
 
 import {CirclePlus, Search, VideoCamera} from "@element-plus/icons-vue";
 import CardMessage from "@/components/chat/list-message/card-message.vue";
+import {useLoading} from "@/composables/states";
 
 const route = useRoute();
 const router = useRouter();
 const chatStore = useChatStore();
 const authStore = useAuthStore();
 const {deleteChat} = useChat();
+const loading = useLoading();
 
 const chats = computed(() => chatStore.$state.chats);
 const user = computed(() => authStore.$state.user);
@@ -110,6 +112,14 @@ const handleClickItemMoreAction = (key: any, item: any) => {
     item.action[key] = !item.action[key];
 };
 
+const handleNewChat = () => {
+    loading.value = true;
+
+    setTimeout(() => {
+        router.push('/friends');
+    }, 100);
+};
+
 </script>
 
 <template>
@@ -121,7 +131,7 @@ const handleClickItemMoreAction = (key: any, item: any) => {
                     <VideoCamera/>
                 </el-icon>
 
-                <el-icon :size="sizeIcon" class="cursor-pointer">
+                <el-icon :size="sizeIcon" class="cursor-pointer" @click="handleNewChat">
                     <CirclePlus/>
                 </el-icon>
             </div>
