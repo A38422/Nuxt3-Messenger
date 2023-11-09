@@ -110,7 +110,9 @@ export const useAuth = () => {
             await updateLastSeenTime("online");
             getUserList();
             getChatList();
-            // getMessagesInChat();
+            getFriendList();
+            getFriendRequest();
+
         } catch (error) {
             console.error("error: ", error);
         }
@@ -261,7 +263,7 @@ export const useAuth = () => {
     };
 
     const unsubscribeFriendRequest = ref<any>(null);
-    const getFriendRequest = async () => {
+    const getFriendRequest = () => {
         if (!user.value) return;
 
         try {
@@ -450,8 +452,9 @@ export const useChat = () => {
     const getChatList = () => {
         if (!user.value) return;
         const chatsRef = collection($firestore, "Chats");
+        const chatsQuery = query(chatsRef, orderBy('updatedTime', 'desc'));
 
-        unsubscribeChatList.value = onSnapshot(chatsRef, snapshot => {
+        unsubscribeChatList.value = onSnapshot(chatsQuery, snapshot => {
             const result = snapshot.docs.map(i => {
                 return {
                     ...i.data(),
@@ -489,7 +492,7 @@ export const useChat = () => {
                         ...i.data(),
                         id: messagesRef.id
                     }
-                }).reverse();
+                }).reverse()
 
                 chatStore.setMessages(result);
             }, (error) => {
@@ -510,7 +513,8 @@ export const useChat = () => {
                     senderID: user.value.userID,
                     content: content,
                     timestamp: new Date()
-                })
+                }),
+                updatedTime: new Date(),
             }, {merge: true})
 
             // await addDoc(messagesRef, {

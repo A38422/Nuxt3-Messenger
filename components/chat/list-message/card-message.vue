@@ -13,7 +13,7 @@ const props = defineProps({
             id: null,
             name: "",
             avatar: "",
-            time: "",
+            time: null,
             Messages: [],
             online: null,
             action: null,
@@ -41,7 +41,7 @@ const handleClickItemMoreAction = (key: string) => {
 
 const convertTimestamp = (value: any) => {
     if (value) {
-        return moment(value.seconds * 1000).utcOffset(0).fromNow();
+        return moment(+value.seconds * 1000).fromNow();
     }
     return "";
 };

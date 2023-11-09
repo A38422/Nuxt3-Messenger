@@ -50,7 +50,7 @@ const convertTimestamp = () => {
     if (data.value) {
         if (data.value.lastSeen === "online") return "Active now";
         else if (data.value.lastSeen)
-            return "Active " + moment(data.value.lastSeen.seconds * 1000).utcOffset(0).fromNow();
+            return "Active " + moment(+data.value.lastSeen.seconds * 1000).fromNow();
         else return "";
     }
     return "";

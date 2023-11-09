@@ -30,8 +30,40 @@ watch(friends, newValue => {
     }
 }, {deep: true, immediate: true})
 
-const handleSearch = () => {
-
+const handleSearch = (value: any) => {
+    switch (activeName.value) {
+        case "friends":
+            dataTable.value = friends.value
+                .map((i: any) => {
+                    return users.value.find((x: any) => x.userID === i);
+                })
+                .filter((i: any) => {
+                    return i.userName.toLowerCase().includes(value.toLowerCase());
+                });
+            break;
+        case "friends-request":
+            const request = users.value.filter((i: any) => {
+                return friendRequest.value.find((o: any) => o.receiverID === user.value.userID && o.status === "pending" && o.senderID === i.userID);
+            });
+            dataTable.value = [...request.filter((i: any) => {
+                return i.userName.toLowerCase().includes(value.toLowerCase());
+            })];
+            break;
+        case "invitation-sent":
+            const invitation = users.value.filter((i: any) => {
+                return friendRequest.value.find((o: any) => o.receiverID === i.userID && o.status === "pending" && o.senderID === user.value.userID);
+            });
+            dataTable.value = [...invitation.filter((i: any) => {
+                return i.userName.toLowerCase().includes(value.toLowerCase());
+            })];
+            break;
+        case "other":
+            const other = users.value.filter((i: any) => {
+                return !friendRequest.value.find((o: any) => o.receiverID === i.userID && o.status === "pending");
+            });
+            dataTable.value = [...other.filter((i: any) => !friends.value.find((o: any) => o === i.userID) && i.userName.toLowerCase().includes(value.toLowerCase()))];
+            break;
+    }
 };
 
 const handleCreateChat = async (value: any) => {
@@ -88,12 +120,12 @@ const handleAddFriend = (receiverID: any) => {
     } else {
         sendFriendRequest(receiverID);
     }
-    dataTable.value = dataTable.value.filter((i:any) => i.userID !== receiverID);
+    dataTable.value = dataTable.value.filter((i: any) => i.userID !== receiverID);
 };
 
 const handleUnfriend = (receiverID: any) => {
     unFriend(receiverID);
-    dataTable.value = dataTable.value.filter((i:any) => i.userID !== receiverID);
+    dataTable.value = dataTable.value.filter((i: any) => i.userID !== receiverID);
 };
 
 const handleAccepted = (receiverID: any) => {
@@ -101,7 +133,7 @@ const handleAccepted = (receiverID: any) => {
 
     if (request && request.id) {
         acceptFriendRequest(request.id);
-        dataTable.value = dataTable.value.filter((i:any) => i.userID !== receiverID);
+        dataTable.value = dataTable.value.filter((i: any) => i.userID !== receiverID);
     }
 };
 
@@ -110,7 +142,7 @@ const handleRejected = (receiverID: any) => {
 
     if (request && request.id) {
         rejectFriendRequest(request.id);
-        dataTable.value = dataTable.value.filter((i:any) => i.userID !== receiverID);
+        dataTable.value = dataTable.value.filter((i: any) => i.userID !== receiverID);
     }
 };
 
@@ -119,7 +151,7 @@ const handleCancelRequest = (receiverID: any) => {
 
     if (request && request.id) {
         rejectFriendRequest(request.id);
-        dataTable.value = dataTable.value.filter((i:any) => i.userID !== receiverID);
+        dataTable.value = dataTable.value.filter((i: any) => i.userID !== receiverID);
     }
 };
 
@@ -134,7 +166,7 @@ const handleCancelRequest = (receiverID: any) => {
                           placeholder="Search"
                           size="large"
                           :prefix-icon="Search"
-                          @keyup.enter="handleSearch"/>
+                          @input="handleSearch"/>
             </div>
         </div>
 
@@ -161,7 +193,7 @@ const handleCancelRequest = (receiverID: any) => {
                                :key="item.userID"
                                :user="item"
                                @on-create-chat="handleCreateChat">
-                        <el-button @click="handleAccepted(item.userID)" >
+                        <el-button @click="handleAccepted(item.userID)">
                             Accept
                         </el-button>
                         <el-button @click="handleRejected(item.userID)">
