@@ -9,6 +9,7 @@ const chatStore = useChatStore();
 const user = computed<any>(() => authStore.$state.user);
 const users = computed<any>(() => authStore.$state.userList);
 const chats = computed<any>(() => chatStore.$state.chats);
+const {isDarkMode} = userDarkMode();
 
 const data = ref<any>(null);
 const chatId = ref<any>(null);
@@ -106,7 +107,8 @@ const convertTimestamp = () => {
             </div>
         </div>
 
-        <div class="demo-collapse px-8 overflow-auto flex-1 mt-3">
+        <div class="demo-collapse px-8 overflow-auto flex-1 mt-3"
+             :class="isDarkMode? 'dark' : ''">
             <el-collapse>
                 <el-collapse-item title="Chat details" name="1">
                     <div class="flex flex-row items-center cursor-pointer">
@@ -262,6 +264,21 @@ const convertTimestamp = () => {
         .el-collapse-item__content {
             padding-bottom: 0;
             font-size: 16px;
+        }
+    }
+}
+
+.demo-collapse.dark {
+    .el-collapse {
+        --el-collapse-header-bg-color: #0f172a;
+        --el-collapse-header-text-color: #94a3b8;
+
+        .el-collapse-item__wrap {
+            background-color: #0f172a;
+        }
+
+        .el-collapse-item__content {
+            color: #94a3b8;
         }
     }
 }

@@ -10,7 +10,7 @@ const authStore = useAuthStore();
 const chatStore = useChatStore();
 const {sendFriendRequest, acceptFriendRequest, rejectFriendRequest, unFriend} = useAuth();
 const {createChat} = useChat();
-
+const {isDarkMode} = userDarkMode();
 const loading = useLoading();
 
 const user = computed<any>(() => authStore.$state.user);
@@ -170,7 +170,10 @@ const handleCancelRequest = (receiverID: any) => {
             </div>
         </div>
 
-        <el-tabs v-model="activeName" class="w-full" @tab-click="handleClick">
+        <el-tabs v-model="activeName"
+                 class="w-full"
+                 :class="isDarkMode ? 'dark-card' : ''"
+                 @tab-click="handleClick">
             <el-tab-pane label="All friends" name="friends">
                 <div v-if="user && dataTable && dataTable.length > 0"
                      class="w-full overflow-auto flex flex-wrap gap-4">
@@ -178,7 +181,7 @@ const handleCancelRequest = (receiverID: any) => {
                                :key="item.userID"
                                :user="item"
                                @on-create-chat="handleCreateChat">
-                        <el-button @click="handleUnfriend(item.userID)">
+                        <el-button type="info" @click="handleUnfriend(item.userID)">
                             Unfriend
                         </el-button>
                     </card-user>
@@ -193,10 +196,10 @@ const handleCancelRequest = (receiverID: any) => {
                                :key="item.userID"
                                :user="item"
                                @on-create-chat="handleCreateChat">
-                        <el-button @click="handleAccepted(item.userID)">
+                        <el-button type="success" @click="handleAccepted(item.userID)">
                             Accept
                         </el-button>
-                        <el-button @click="handleRejected(item.userID)">
+                        <el-button type="danger" @click="handleRejected(item.userID)">
                             Reject
                         </el-button>
                     </card-user>
@@ -211,7 +214,7 @@ const handleCancelRequest = (receiverID: any) => {
                                :key="item.userID"
                                :user="item"
                                @on-create-chat="handleCreateChat">
-                        <el-button @click="handleCancelRequest(item.userID)">
+                        <el-button type="danger" @click="handleCancelRequest(item.userID)">
                             Cancel request
                         </el-button>
                     </card-user>
@@ -226,7 +229,7 @@ const handleCancelRequest = (receiverID: any) => {
                                :key="item.userID"
                                :user="item"
                                @on-create-chat="handleCreateChat">
-                        <el-button @click="handleAddFriend(item.userID)">
+                        <el-button type="primary" @click="handleAddFriend(item.userID)">
                             Add friend
                         </el-button>
                     </card-user>
@@ -237,6 +240,20 @@ const handleCancelRequest = (receiverID: any) => {
     </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
+.dark-card {
+    .el-card {
+        background: #0f172a;
+        color: #94a3b8;
+        border: 1px solid #2a3241;
+    }
 
+    .el-tabs__item {
+        color: #94a3b8;
+    }
+
+    .el-tabs__item.is-active {
+        color: var(--el-color-primary);
+    }
+}
 </style>

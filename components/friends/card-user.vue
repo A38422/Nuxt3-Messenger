@@ -41,14 +41,13 @@ const handleCreateChat = (item: any) => {
         <el-avatar
             :src="user?.photoUrl"
             :size="120"
-            class="border"
         />
 
         <div class="p-1 pt-3 flex flex-col justify-center">
             <p class="font-semibold text-center mb-3">{{user?.userName}}</p>
             <div class="flex justify-center flex-wrap items-center gap-1">
                 <slot/>
-                <el-button @click="handleCreateChat">
+                <el-button type="primary" @click="handleCreateChat">
                     Chat
                 </el-button>
             </div>

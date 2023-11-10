@@ -1,6 +1,10 @@
 <script setup lang="ts">
 
 import {useLoading} from "@/composables/states";
+import Setting from "@/components/setting/setting.vue";
+
+const authStore = useAuthStore();
+const user = computed(() => authStore.$state.user);
 
 const loading = useLoading();
 
@@ -10,7 +14,9 @@ loading.value = false;
 
 <template>
     <div class="w-full h-full">
-        <NuxtLayout name="error" class="w-full h-full flex flex-col items-center"/>
+        <setting v-if="user"/>
+
+        <NuxtLayout v-else name="error" class="w-full h-full flex flex-col items-center"/>
     </div>
 </template>
 
