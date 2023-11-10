@@ -23,8 +23,11 @@ const props = defineProps({
 });
 
 const authStore = useAuthStore();
+const route = useRoute();
+const {updateChat} = useChat();
+
 const user = computed(() => authStore.$state.user);
-const className = () => {
+const className = computed(() => {
     if (props.data?.action.read) {
         if (user && user.value.userID === props.data.Messages[props.data.Messages.length - 1].senderID) {
             return "";
@@ -32,8 +35,18 @@ const className = () => {
         return 'font-semibold text-black';
     }
     return "";
+});
 
-};
+watch(() => route.query.chatId,
+    newId => {
+        if (newId && props.data.id && user.value.userID !== props.data.id) {
+            updateChat(newId, {
+                read: false,
+                notification: props.data.action.notification
+            });
+        }
+    }, {immediate: true}
+);
 
 const popoverRef = ref();
 
@@ -46,7 +59,7 @@ const onClickOutside = () => {
 };
 
 const handleClickItemMoreAction = (key: string) => {
-    emits("onClickItemMoreAction", key);
+      emits("onClickItemMoreAction", key);
 };
 
 const convertTimestamp = (value: any) => {
