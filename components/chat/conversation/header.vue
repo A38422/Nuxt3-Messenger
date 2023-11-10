@@ -41,7 +41,6 @@ const handleClickInfo = () => {
             <el-avatar
                 :src="avatar"
                 :size="45"
-                class="border"
             />
         </div>
 

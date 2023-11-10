@@ -111,7 +111,7 @@ onUnmounted(() => {
 
 <template>
     <section v-if="user && friend" class="chat-container overflow-hidden h-full w-full flex flex-col">
-        <div class="chat-header px-6 py-4 flex flex-row justify-between items-center border-b-2 border-b-gray-100">
+        <div class="chat-header px-6 py-4 flex flex-row justify-between items-center border-b-2 border-b-gray-100 dark:border-b-slate-700">
             <ChatConversationHeader :active="friend?.lastSeen" :avatar="friend?.photoUrl" :name="friend?.userName"/>
         </div>
 

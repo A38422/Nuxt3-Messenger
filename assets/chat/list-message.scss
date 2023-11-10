@@ -78,6 +78,14 @@
     }
   }
 
+  .active.dark {
+    background-color: #00325d !important;
+
+    p {
+      color: white;
+    }
+  }
+
   .name__item__list-massage {
     width: 210px;
   }
@@ -105,6 +113,17 @@
 .cover-bar {
   position: absolute;
   background: #ffffff;;
+  height: 100%;
+  top: 0;
+  right: 0;
+  width: .4em;
+  -webkit-transition: all .5s;
+  opacity: 1;
+}
+
+.cover-bar.dark {
+  position: absolute;
+  background: #0f172a;;
   height: 100%;
   top: 0;
   right: 0;

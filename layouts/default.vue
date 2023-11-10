@@ -5,6 +5,7 @@ import {useLoading} from "@/composables/states";
 const route = useRoute();
 const {user, signOut, signIn, getUserList, getFriendList, getFriendRequest, updateLastSeenTime} = useAuth();
 const {getChatList} = useChat();
+const {isDarkMode} = userDarkMode();
 
 const sizeIcon = 25;
 const noAvatar = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
@@ -52,9 +53,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <!--    <el-container class="w-full h-screen bg-white dark:bg-black dark:text-white">-->
-    <el-container class="common-layout h-screen w-full">
-        <el-aside width="250px" class="flex flex-col h-full">
+        <el-container class="antialiased common-layout w-full h-screen text-black dark:text-slate-400 bg-white dark:bg-slate-900">
+<!--    <el-container class="common-layout h-screen w-full">-->
+        <el-aside width="250px" class="aside-menu flex flex-col h-full"
+                  :class="isDarkMode ? 'dark-menu' : ''">
             <NuxtLink to="/" class="block m-4 image__lazy w-fit" @click="handleLoading('/')">
                 <img src="@/assets/logo.svg" alt="" style="width: 40px; object-fit: cover"/>
             </NuxtLink>
@@ -76,7 +78,17 @@ onBeforeUnmount(() => {
 
                 <NuxtLink to="/friends" @click="handleLoading('/friends')">
                     <el-menu-item index="/friends">
-                        <svg-icons name="icon-friends" :size="sizeIcon" class="mr-1"/>
+                        <svg-icons v-if="active === '/friends'" name="icon-friends"
+                                   color="#409eff"
+                                   :size="sizeIcon"
+                                   class="mr-1"/>
+                        <svg-icons v-else-if="isDarkMode" name="icon-friends"
+                                   color="#94a3b8"
+                                   :size="sizeIcon"
+                                   class="mr-1"/>
+                        <svg-icons v-else name="icon-friends"
+                                   :size="sizeIcon"
+                                   class="mr-1"/>
                         <template #title>
                             <span class="ml-3 font-semibold text-lg">Friends</span>
                         </template>
@@ -112,7 +124,6 @@ onBeforeUnmount(() => {
                         <el-avatar
                             :src="user.photoUrl"
                             :size="40"
-                            class="border"
                             fit="cover"
                         />
                         <span class="ml-3 font-semibold text-lg">{{ user.userName }}</span>
@@ -127,7 +138,6 @@ onBeforeUnmount(() => {
                         <el-avatar
                             :src="noAvatar"
                             :size="40"
-                            class="border"
                             fit="cover"
                         />
                         <span class="ml-3 font-semibold text-lg">Sign In</span>
@@ -136,7 +146,9 @@ onBeforeUnmount(() => {
             </div>
         </el-aside>
 
-        <el-divider direction="vertical"/>
+        <div :class="isDarkMode ? 'dark-divider' : ''">
+            <el-divider direction="vertical" />
+        </div>
 
         <el-main v-loading="loading">
             <slot/>
@@ -145,35 +157,62 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped>
+
+.antialiased {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 .common-layout {
     .el-main {
         padding: 0;
     }
-}
 
-.el-divider--vertical {
-    height: 100%;
-    margin: 0;
-}
+    .el-menu-vertical {
+        border-right: none;
+    }
 
-.el-menu-vertical {
-    border-right: none;
-}
+    .image__lazy {
+        height: 40px;
+    }
 
-.image__lazy {
-    height: 40px;
-}
+    .item-menu__logout {
+        width: 100%;
+        padding: 10px 20px;
+        cursor: pointer;
 
-.item-menu__logout {
-    width: 100%;
-    padding: 10px 20px;
-    cursor: pointer;
+        &:hover {
+            background: var(--el-menu-hover-bg-color);
+            transition: border-color var(--el-transition-duration),
+            background-color var(--el-transition-duration),
+            color var(--el-transition-duration);
+        }
+    }
 
-    &:hover {
-        background: var(--el-menu-hover-bg-color);
-        transition: border-color var(--el-transition-duration),
-        background-color var(--el-transition-duration),
-        color var(--el-transition-duration);
+    .el-divider--vertical {
+        height: 100%;
+        margin: 0;
+    }
+
+    .dark-menu {
+        .el-menu {
+            background-color: #0f172a;
+
+            .el-menu-item {
+                color: #94a3b8;
+            }
+
+            .el-menu-item.is-active {
+                color: var(--el-menu-active-color);
+            }
+        }
+    }
+
+    .dark-divider {
+        .el-divider--vertical {
+            --tw-divide-opacity: 1;
+            border-left: 1px solid #4c4d4f;
+        }
     }
 }
 </style>

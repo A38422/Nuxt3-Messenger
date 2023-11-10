@@ -26,7 +26,7 @@ const convertTimestamp = (value: any) => {
             v-if="!sender"
             :src="photoUrl"
             :size="35"
-            class="border mr-4"
+            class="mr-4"
             :title="convertTimestamp(time)"
         />
 

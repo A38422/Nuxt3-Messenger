@@ -10,6 +10,7 @@ const chatStore = useChatStore();
 const authStore = useAuthStore();
 const {deleteChat, updateChat} = useChat();
 const loading = useLoading();
+const {isDarkMode} = userDarkMode();
 
 const chats = computed(() => chatStore.$state.chats);
 const user = computed(() => authStore.$state.user);
@@ -170,7 +171,7 @@ const handleNewChat = () => {
 
         <NuxtLayout v-else name="error" class="flex-1"/>
 
-        <div class="cover-bar"></div>
+        <div class="cover-bar" :class="isDarkMode ? 'dark' : ''"></div>
     </div>
 
 

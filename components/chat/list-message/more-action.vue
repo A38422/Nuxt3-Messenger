@@ -17,6 +17,8 @@ const props = defineProps({
 
 const emits = defineEmits(["onChangeRead", "onChangeNotification", "onChangeBlock", "onDelete", "onClickItem"])
 
+const {isDarkMode} = userDarkMode();
+
 const sizeIcon = 23;
 
 const handleClick = (key : string) => {
