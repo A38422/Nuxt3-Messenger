@@ -72,7 +72,7 @@ const handleCreateChat = async (value: any) => {
 
     chatStore.setChatID(result.id);
 
-    await setTimeout(async () => {
+    setTimeout(async () => {
         if (result) await router.push({
             path: '/',
             query: {
@@ -123,10 +123,7 @@ const handleAddFriend = (receiverID: any) => {
     dataTable.value = dataTable.value.filter((i: any) => i.userID !== receiverID);
 };
 
-const handleUnfriend = (receiverID: any) => {
-    unFriend(receiverID);
-    dataTable.value = dataTable.value.filter((i: any) => i.userID !== receiverID);
-};
+
 
 const handleAccepted = (receiverID: any) => {
     const request = friendRequest.value.find((i: any) => i.receiverID === user.value.userID && i.senderID === receiverID);
@@ -155,6 +152,32 @@ const handleCancelRequest = (receiverID: any) => {
     }
 };
 
+const messageUnF = (receiverID: any) => {
+    const nameUnF = dataTable.value.find((i: any) => i.userID === receiverID);
+
+    ElMessageBox.confirm(
+        `Messenger will be remove ${nameUnF.userName} from your friends list. Continue?`,
+        'Confirm',
+        {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+        }
+    ).then(() => {
+        unFriend(receiverID);
+        dataTable.value = dataTable.value.filter((i: any) => i.userID !== receiverID);
+
+        ElMessage({
+            type: 'success',
+            message: 'Sign out completed',
+        })
+    }).catch(() => {
+        ElMessage({
+            type: 'info',
+            message: 'Sign out canceled',
+        })
+    })
+};
+
 </script>
 
 <template>
@@ -181,7 +204,11 @@ const handleCancelRequest = (receiverID: any) => {
                                :key="item.userID"
                                :user="item"
                                @on-create-chat="handleCreateChat">
+<<<<<<< HEAD
+                        <el-button @click="messageUnF(item.userID)">
+=======
                         <el-button type="info" @click="handleUnfriend(item.userID)">
+>>>>>>> 007d31d8d34bee24c01e5dfb1b8b61310361064a
                             Unfriend
                         </el-button>
                     </card-user>
