@@ -418,11 +418,11 @@ export const useChat = () => {
         return chat;
     };
 
-    const updateChat = async (chatID: any, participants: any) => {
+    const updateChat = (chatID: any, action: any) => {
         const chatsRef = doc(collection($firestore, "Chats"), chatID);
 
         try {
-            await setDoc(chatsRef, {participants: participants}, {merge: true});
+            setDoc(chatsRef, {action: action}, {merge: true});
         } catch (error) {
             console.error("error: ", error);
         }
@@ -504,7 +504,6 @@ export const useChat = () => {
     const sendMessage = async (chatID: any, content: any) => {
         if (!user.value) return;
 
-        // const messagesRef = collection(doc(collection($firestore, "Chats"), chatID), "Messages");
         try {
             const messageRef = doc(collection($firestore, "Chats"), chatID);
             await setDoc(messageRef, {
@@ -515,14 +514,11 @@ export const useChat = () => {
                     timestamp: new Date()
                 }),
                 updatedTime: new Date(),
+                action: {
+                    notification: false,
+                    read: true
+                },
             }, {merge: true})
-
-            // await addDoc(messagesRef, {
-            //     id: messagesRef.id,
-            //     senderID: user.value.userID,
-            //     content: content,
-            //     timestamp: serverTimestamp()
-            // });
         } catch (e) {
             console.error("error: ", e);
         }

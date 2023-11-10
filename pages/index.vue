@@ -21,11 +21,11 @@ onUnmounted(() => {
 
 <template>
     <div class="w-full h-full flex">
-        <div class="border-r-2 border-r-gray-100 h-full">
+        <div class="border-r-2 border-r-gray-100 dark:border-r-slate-700 h-full">
             <ChatListMessage/>
         </div>
 
-        <div class="border-r-2 border-r-gray-100 h-full flex-1">
+        <div class="border-r-2 border-r-gray-100 dark:border-r-slate-700 h-full flex-1">
             <ChatConversation/>
         </div>
 

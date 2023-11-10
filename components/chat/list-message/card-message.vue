@@ -23,7 +23,31 @@ const props = defineProps({
 });
 
 const authStore = useAuthStore();
+const route = useRoute();
+const {updateChat} = useChat();
+const {isDarkMode} = userDarkMode();
+
 const user = computed(() => authStore.$state.user);
+const className = computed(() => {
+    if (props.data?.action.read) {
+        if (user && user.value.userID === props.data.Messages[props.data.Messages.length - 1].senderID) {
+            return "";
+        }
+        return 'font-semibold text-black';
+    }
+    return "";
+});
+
+watch(() => route.query.chatId,
+    newId => {
+        if (newId && props.data.id && user.value.userID !== props.data.id) {
+            updateChat(newId, {
+                read: false,
+                notification: props.data.action.notification
+            });
+        }
+    }, {immediate: true}
+);
 
 const popoverRef = ref();
 
@@ -36,7 +60,7 @@ const onClickOutside = () => {
 };
 
 const handleClickItemMoreAction = (key: string) => {
-    emits("onClickItemMoreAction", key);
+      emits("onClickItemMoreAction", key);
 };
 
 const convertTimestamp = (value: any) => {
@@ -50,12 +74,12 @@ const convertTimestamp = (value: any) => {
 
 <template>
     <div class="item__list-message flex items-center"
+         :class="isDarkMode ? 'dark dark__more-action' : ''"
          v-click-outside="onClickOutside">
         <el-badge :is-dot="data.online === 'online'" class="dot-badge mr-4">
             <el-avatar
                 :src="data.avatar"
                 :size="45"
-                class="border"
             />
         </el-badge>
 
@@ -65,7 +89,7 @@ const convertTimestamp = (value: any) => {
             </p>
             <div v-if="data.Messages && data.Messages.length > 0"
                  class="font-light text-sm text-gray-500 flex items-center"
-                 :class="data?.action?.read ? 'font-semibold text-black' : ''">
+                 :class="className">
                 <span v-if="data.Messages && data.Messages.length > 0"
                       class="message__item__list-message text-ellipsis whitespace-nowrap overflow-hidden">
                     {{ (user && user.userID === data.Messages[data.Messages.length - 1].senderID ? "You: " : "")
@@ -87,6 +111,7 @@ const convertTimestamp = (value: any) => {
             ref="popoverRef"
             :visible="data.visibleAction"
             placement="bottom"
+            :popper-class="isDarkMode ? 'dark__more-action' : ''"
             :width="250">
             <more-action :action="data.action"
                          @on-click-item="(key) => handleClickItemMoreAction(key)"/>
@@ -104,3 +129,13 @@ const convertTimestamp = (value: any) => {
         </el-popover>
     </div>
 </template>
+
+<style lang="scss" >
+
+.el-popover.el-popper.dark__more-action {
+    background: #0f172a !important;
+    color: #94a3b8 !important;
+    border: 1px solid #2a3241;
+}
+
+</style>

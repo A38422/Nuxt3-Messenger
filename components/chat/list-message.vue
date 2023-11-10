@@ -8,8 +8,9 @@ const route = useRoute();
 const router = useRouter();
 const chatStore = useChatStore();
 const authStore = useAuthStore();
-const {deleteChat} = useChat();
+const {deleteChat, updateChat} = useChat();
 const loading = useLoading();
+const {isDarkMode} = userDarkMode();
 
 const chats = computed(() => chatStore.$state.chats);
 const user = computed(() => authStore.$state.user);
@@ -31,7 +32,7 @@ watch(chats, (newValue) => {
 }, {deep: true, immediate: true});
 
 watch(() => route.query.chatId,
-    async newId => {
+    newId => {
         isActive.value = newId;
     }, {immediate: true}
 );
@@ -109,7 +110,14 @@ const handleClickItemMoreAction = (key: any, item: any) => {
         return;
     }
 
-    item.action[key] = !item.action[key];
+    if (key === 'read') {
+        updateChat(item.id, {
+            read: !item.action[key],
+            notification: false,
+        });
+    } else {
+        item.action[key] = !item.action[key];
+    }
 };
 
 const handleNewChat = () => {
@@ -163,7 +171,7 @@ const handleNewChat = () => {
 
         <NuxtLayout v-else name="error" class="flex-1"/>
 
-        <div class="cover-bar"></div>
+        <div class="cover-bar" :class="isDarkMode ? 'dark' : ''"></div>
     </div>
 
 
