@@ -215,4 +215,10 @@ onBeforeUnmount(() => {
         }
     }
 }
+
+html.dark {
+    .el-menu-item:hover {
+        background-color: #334155;
+    }
+}
 </style>

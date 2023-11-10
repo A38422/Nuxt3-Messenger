@@ -22,6 +22,22 @@
   }
 }
 
+html.dark {
+  .input-search__list-message {
+    .el-input__wrapper {
+      box-shadow: 0 0 0 1px #414243 inset;
+      background: none;
+      border-radius: 10px;
+      color: #94a3b8;
+      -webkit-transition: background-color var(--el-transition-duration);
+
+      &:hover {
+        background: #334155;
+      }
+    }
+  }
+}
+
 .content__list-message {
   position: relative;
 
@@ -45,6 +61,14 @@
 
     &:hover {
       background-color: #f7f8f8;
+
+      .more-action {
+        visibility: visible;
+      }
+    }
+
+    &.dark:hover {
+      background-color: #334155;
 
       .more-action {
         visibility: visible;

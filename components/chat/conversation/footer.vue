@@ -21,7 +21,7 @@ const send = () => {
 
         <div class="relative flex-grow">
             <input
-                class="rounded-full py-2 pl-3 pr-10 w-full border border-gray-200 bg-gray-200 focus:bg-white focus:outline-none text-gray-600 transition duration-200 ease-in"
+                class="rounded-full py-2 pl-3 pr-10 w-full border border-gray-200 dark:border-slate-600 bg-gray-200 dark:bg-slate-900 focus:outline-none text-black dark:text-slate-400"
                 type="text" placeholder="Aa"
                 v-model="message"
                 @keyup.enter="send"/>
