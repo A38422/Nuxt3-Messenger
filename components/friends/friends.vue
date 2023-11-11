@@ -152,7 +152,7 @@ const handleCancelRequest = (receiverID: any) => {
     }
 };
 
-const messageUnF = (receiverID: any) => {
+const handleUnfriend = (receiverID: any) => {
     const nameUnF = dataTable.value.find((i: any) => i.userID === receiverID);
 
     ElMessageBox.confirm(
@@ -204,11 +204,7 @@ const messageUnF = (receiverID: any) => {
                                :key="item.userID"
                                :user="item"
                                @on-create-chat="handleCreateChat">
-<<<<<<< HEAD
-                        <el-button @click="messageUnF(item.userID)">
-=======
-                        <el-button type="info" @click="handleUnfriend(item.userID)">
->>>>>>> 007d31d8d34bee24c01e5dfb1b8b61310361064a
+                        <el-button @click="handleUnfriend(item.userID)">
                             Unfriend
                         </el-button>
                     </card-user>

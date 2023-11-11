@@ -152,5 +152,9 @@ html.dark {
         background-color: #374343;
         box-shadow: 0 0 0 1px #414243 inset;
     }
+
+    .el-loading-mask {
+        background-color: rgba(14, 14, 14, 0.7);
+    }
 }
 </style>
