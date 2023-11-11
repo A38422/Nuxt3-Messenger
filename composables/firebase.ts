@@ -27,6 +27,7 @@ import {
 } from "firebase/firestore";
 // @ts-ignores
 import {v4 as uuidv4} from 'uuid';
+import { getMessaging, getToken } from "firebase/messaging";
 
 
 const runtimeConfig = useRuntimeConfig();
@@ -43,6 +44,11 @@ const app = initializeApp({
 
 const $auth = getAuth();
 const $firestore = getFirestore(app);
+const $messaging = getMessaging(app);
+// Add the public key generated from the console here.
+getToken($messaging, {
+    vapidKey: "BJo58noi0b4e0sfVfvLCllnpjm3yVOEPmzW-HHiEYqUyZtT7Mopcl5CI2o4IxUxwdUQkAR3FDVOQaguRt-fK6xs",
+});
 
 export const useAuth = () => {
     const router = useRouter();
@@ -616,5 +622,9 @@ export const useChat = () => {
         getMessagesInChat,
         updateChatNotificationSettings,
     }
+
+};
+
+export const useNotification = () => {
 
 };

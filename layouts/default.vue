@@ -221,5 +221,9 @@ html.dark {
     .el-menu-item:hover {
         background-color: #334155;
     }
+
+    .el-loading-mask {
+        background-color: rgba(14, 14, 14, 0.7);
+    }
 }
 </style>
