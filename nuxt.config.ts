@@ -15,6 +15,7 @@ export default defineNuxtConfig({
             meta: [
                 // <meta name="viewport" content="width=device-width, initial-scale=1">
                 {name: 'viewport', content: 'width=device-width, initial-scale=1'},
+                {name: 'google-signin-client_id', content: '727359037732-rsg935m057shsbm8c4np3muatocurn14.apps.googleusercontent.com'},
                 {"http-equiv": "Cross-Origin-Opener-Policy", content: "allow-popups"}
             ],
             script: [
