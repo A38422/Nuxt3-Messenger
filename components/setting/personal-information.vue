@@ -94,7 +94,7 @@ const handleChange = (value: boolean) => {
                     Company
                 </div>
             </template>
-            {{ user.address ? user.address : '-' }}
+            {{ user.company ? user.company : '-' }}
         </el-descriptions-item>
 
         <el-descriptions-item>
@@ -106,7 +106,7 @@ const handleChange = (value: boolean) => {
                     Education
                 </div>
             </template>
-            {{ user.address ? user.address : '-' }}
+            {{ user.education ? user.education : '-' }}
         </el-descriptions-item>
 
         <el-descriptions-item>

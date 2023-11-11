@@ -66,6 +66,7 @@ export const useAuth = () => {
             console.log("error: ", error.message);
         });
     };
+
     const signOut = async () => {
         await updateLastSeenTime();
         await authStore.deleteUser();
@@ -115,6 +116,38 @@ export const useAuth = () => {
 
         } catch (error) {
             console.error("error: ", error);
+        }
+    };
+
+    const updateAvatar = async (avatar: String) => {
+        if (!user.value) return;
+
+        try {
+            const userRef = doc(collection($firestore, "Users"), user.value.userID);
+            await updateDoc(userRef, {photoUrl: avatar});
+
+            authStore.setUser({
+                ...user.value,
+                photoUrl: avatar
+            });
+        } catch (error) {
+            console.log("error: ", error);
+        }
+    };
+
+    const updateInfo = async (data: any) => {
+        if (!user.value) return;
+
+        try {
+            const userRef = doc(collection($firestore, "Users"), user.value.userID);
+            await setDoc(userRef, data, {merge: true});
+
+            authStore.setUser({
+                ...user.value,
+                ...data
+            });
+        } catch (error) {
+            console.log("error: ", error);
         }
     };
 
@@ -360,6 +393,7 @@ export const useAuth = () => {
         user,
         signIn,
         signOut,
+        updateAvatar,
         acceptFriendRequest,
         rejectFriendRequest,
         sendFriendRequest,
@@ -368,6 +402,7 @@ export const useAuth = () => {
         unblockUser,
         updateLastSeenTime,
         updateNotificationSettings,
+        updateInfo,
         getFriendRequest,
         getUserList,
         getFriendList,
