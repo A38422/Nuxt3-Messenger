@@ -18,7 +18,7 @@ const loading = useLoading();
             <div class="py-12 bg-indigo-100 lg:bg-white flex justify-center lg:justify-start lg:pl-5">
                 <div class="cursor-pointer flex items-center">
                     <a data-v-433a9abd="" aria-current="page" href="/" class="router-link-active router-link-exact-active block m-4 image__lazy w-fit">
-                        <img data-v-433a9abd="" src="/_nuxt/assets/logo.svg" alt="" style="width: 40px; ">
+                        <img data-v-433a9abd="" src="@/assets/logo.svg" alt="" style="width: 40px; ">
                     </a>
                     <div class="text-2xl text-indigo-800 tracking-wide ml-2 font-semi-bold">Messenger</div>
                 </div>
