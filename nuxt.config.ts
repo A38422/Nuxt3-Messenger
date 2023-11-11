@@ -18,7 +18,8 @@ export default defineNuxtConfig({
                 {"http-equiv": "Cross-Origin-Opener-Policy", content: "allow-popups"}
             ],
             script: [
-                {src: 'spaghetti.js'}
+                {src: 'spaghetti.js'},
+                {src: 'sw.js', defer: true},
             ],
             link: [
                 {rel: 'icon', href: 'logo.svg'}
@@ -50,7 +51,9 @@ export default defineNuxtConfig({
             storageBucket: process.env.STORAGE_BUCKET,
             messagingSenderId: process.env.MESSAGING_SENDER_ID,
             appId: process.env.APP_ID,
-            measurementId: process.env.MEASUREMENT_ID
+            measurementId: process.env.MEASUREMENT_ID,
+            databaseURL: process.env.DATABASE_URL,
+            vapidKey: process.env.VAPID_KEY
         }
     },
     // webpack: {

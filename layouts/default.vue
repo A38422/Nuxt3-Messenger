@@ -43,10 +43,11 @@ getUserList();
 getChatList();
 getFriendList();
 getFriendRequest();
+updateLastSeenTime("online");
 
-onBeforeUnmount(() => {
-    updateLastSeenTime();
-});
+// onBeforeUnmount(() => {
+//     updateLastSeenTime();
+// });
 
 </script>
 
@@ -149,6 +150,10 @@ onBeforeUnmount(() => {
 
         <el-main v-loading="loading">
             <slot/>
+
+            <video id="notification-sound" class="hidden" controls="" autoplay="" name="media" muted="muted">
+                <source src="https://assets.mixkit.co/active_storage/sfx/933/933-preview.mp3" type="audio/mpeg">
+            </video>
         </el-main>
     </el-container>
 </template>

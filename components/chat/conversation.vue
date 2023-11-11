@@ -78,9 +78,15 @@ watch(() => route.query.chatId,
     }, {immediate: true}
 )
 
-const send = (value: String) => {
-    if (route.query && route.query.chatId && value) {
-        sendMessage(route.query.chatId, value);
+const send = (content: String) => {
+    if (route.query && route.query.chatId && content) {
+        sendMessage(
+            route.query.chatId,
+            content,
+            friend.value.userName,
+            friend.value.tokenDevice || '',
+            friend.value.photoUrl
+        );
     }
 };
 
