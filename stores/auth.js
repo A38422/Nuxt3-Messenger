@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 
 const userLocalStorage = () => {
     if (localStorage.getItem("user")) {
-        return JSON.parse(localStorage.getItem("user"))
+        return JSON.parse(localStorage.getItem("user"));
     }
     return null;
 }
@@ -26,6 +26,8 @@ export const useAuthStore = defineStore('auth', {
         setUser(data) {
             this.$state.user = data;
             localStorage.setItem("user", JSON.stringify(data));
+
+            // console.log(data);
         },
         deleteUser() {
             this.$state.user = null;

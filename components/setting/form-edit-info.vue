@@ -20,12 +20,14 @@ const formData = reactive<any>({
 });
 
 watch(user, () => {
-    formData.userName = user.value.userName;
-    formData.email = user.value.email;
-    formData.phone = user.value.phone;
-    formData.address = user.value.address;
-    formData.company = user.value.company;
-    formData.education = user.value.education;
+    if (user.value) {
+        formData.userName = user.value.userName;
+        formData.email = user.value.email;
+        formData.phone = user.value.phone;
+        formData.address = user.value.address;
+        formData.company = user.value.company;
+        formData.education = user.value.education;
+    }
 }, {deep: true, immediate: true});
 
 const validatePhone = (rule: any, value: any, callback: any) => {
@@ -57,12 +59,15 @@ const handleSave = async () => {
 const resetForm = async () => {
     if (!form.value) return;
     await form.value.resetFields();
-    formData.userName = user.value.userName;
-    formData.email = user.value.email;
-    formData.phone = user.value.phone;
-    formData.address = user.value.address;
-    formData.company = user.value.company;
-    formData.education = user.value.education;
+
+    if (user.value) {
+        formData.userName = user.value.userName;
+        formData.email = user.value.email;
+        formData.phone = user.value.phone;
+        formData.address = user.value.address;
+        formData.company = user.value.company;
+        formData.education = user.value.education;
+    }
 }
 
 const open = async () => {
