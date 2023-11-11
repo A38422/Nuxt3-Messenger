@@ -27,8 +27,7 @@ import {
 } from "firebase/firestore";
 // @ts-ignores
 import {v4 as uuidv4} from 'uuid';
-import { getMessaging, getToken } from "firebase/messaging";
-
+import {getMessaging, getToken, onMessage} from "firebase/messaging";
 
 const runtimeConfig = useRuntimeConfig();
 
@@ -39,15 +38,45 @@ const app = initializeApp({
     storageBucket: runtimeConfig.public.storageBucket,
     messagingSenderId: runtimeConfig.public.messagingSenderId,
     appId: runtimeConfig.public.appId,
-    measurementId: runtimeConfig.public.measurementId
+    measurementId: runtimeConfig.public.measurementId,
+    databaseURL: runtimeConfig.public.databaseURL
 });
 
 const $auth = getAuth();
 const $firestore = getFirestore(app);
 const $messaging = getMessaging(app);
-// Add the public key generated from the console here.
+onMessage($messaging, (payload) => {
+    // console.log('Message received. ', payload);
+    let check = true;
+
+    document.body.addEventListener("click", function () {
+        if (check) {
+            // document.getElementById("notification-sound").muted = false;
+            // document.getElementById("notification-sound").play();
+            const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/933/933-preview.mp3");
+            audio.play();
+            check = false;
+        }
+    });
+});
+
+const tokenDevice = ref<any>("");
 getToken($messaging, {
-    vapidKey: "BJo58noi0b4e0sfVfvLCllnpjm3yVOEPmzW-HHiEYqUyZtT7Mopcl5CI2o4IxUxwdUQkAR3FDVOQaguRt-fK6xs",
+    vapidKey: runtimeConfig.public.vapidKey,
+}).then((currentToken) => {
+    if (currentToken) {
+        tokenDevice.value = currentToken;
+
+        setTimeout(async () => {
+            const {setTokenDevice} = useAuth();
+            await setTokenDevice(tokenDevice.value)
+        }, 2000);
+
+    } else {
+        console.log('No registration token available. Request permission to generate one.');
+    }
+}).catch((err) => {
+    console.log('An error occurred while retrieving token. ', err);
 });
 
 export const useAuth = () => {
@@ -122,13 +151,15 @@ export const useAuth = () => {
                     phone: null,
                     address: null,
                     education: null,
-                    company: null
+                    company: null,
+                    tokenDevice: tokenDevice.value
                 });
 
                 await getDoc(doc(userCollection, uid)).then(async r => {
                     authStore.setUser({
                         ...r.data(),
-                        lastSeen: "online"
+                        lastSeen: "online",
+                        tokenDevice: tokenDevice.value
                     });
 
                     getUserList();
@@ -139,9 +170,16 @@ export const useAuth = () => {
                     await router.push('/');
                 });
             } else {
+                if (tokenDevice.value) {
+                    await setDoc(userDoc, {
+                        tokenDevice: tokenDevice.value
+                    }, {merge: true});
+                }
+
                 authStore.setUser({
                     ...docSnapshot.data(),
-                    lastSeen: "online"
+                    lastSeen: "online",
+                    tokenDevice: tokenDevice.value
                 });
 
                 getUserList();
@@ -166,6 +204,22 @@ export const useAuth = () => {
             authStore.setUser({
                 ...user.value,
                 photoUrl: avatar
+            });
+        } catch (error) {
+            console.log("error: ", error);
+        }
+    };
+
+    const setTokenDevice = async (token: String) => {
+        if (!user.value) return;
+
+        try {
+            const userRef = doc(collection($firestore, "Users"), user.value.userID);
+            await setDoc(userRef, {tokenDevice: token}, {merge: true});
+
+            authStore.setUser({
+                ...user.value,
+                tokenDevice: token
             });
         } catch (error) {
             console.log("error: ", error);
@@ -231,7 +285,7 @@ export const useAuth = () => {
         }
     };
 
-    const updateLastSeenTime = async (status?: any) => {
+    const updateLastSeenTime = async (status?: any, unload?: any) => {
         if (user.value) {
             try {
                 const userRef = doc(collection($firestore, "Users"), user.value.userID);
@@ -245,7 +299,7 @@ export const useAuth = () => {
                     lastSeen: lastSeenTime
                 });
 
-                if (lastSeenTime !== 'online') {
+                if (lastSeenTime !== 'online' && !unload) {
                     await authStore.deleteUser();
                     await authStore.deleteUserList();
                     await authStore.deleteFriendList();
@@ -433,7 +487,7 @@ export const useAuth = () => {
     });
 
     window.addEventListener('beforeunload', async (event) => {
-        await updateLastSeenTime();
+        await updateLastSeenTime(null, true);
     });
 
     return {
@@ -456,7 +510,8 @@ export const useAuth = () => {
         getFriendList,
         getBlockedUsersList,
         searchUsersByKeyword,
-        signInWithEmail
+        signInWithEmail,
+        setTokenDevice
     }
 };
 
@@ -585,7 +640,7 @@ export const useChat = () => {
         }
     };
 
-    const sendMessage = async (chatID: any, content: any) => {
+    const sendMessage = async (chatID: any, content: any, name: any, tokenDevice: any, image: any) => {
         if (!user.value) return;
 
         try {
@@ -602,7 +657,18 @@ export const useChat = () => {
                     notification: false,
                     read: true
                 },
-            }, {merge: true})
+            }, {merge: true});
+
+
+            useFetch(`/api/send-notification`, {
+                method: 'POST',
+                body: {
+                    name: name,
+                    content: content,
+                    tokenDevice: tokenDevice,
+                    image: image
+                }
+            });
         } catch (e) {
             console.error("error: ", e);
         }
@@ -622,9 +688,5 @@ export const useChat = () => {
         getMessagesInChat,
         updateChatNotificationSettings,
     }
-
-};
-
-export const useNotification = () => {
 
 };
