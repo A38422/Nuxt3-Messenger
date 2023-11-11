@@ -43,7 +43,7 @@ const handleSearch = (value: any) => {
             break;
         case "friends-request":
             const request = users.value.filter((i: any) => {
-                return friendRequest.value.find((o: any) => o.receiverID === user.value.userID && o.status === "pending" && o.senderID === i.userID);
+                return friendRequest.value.find((o: any) => o.receiverID === user.value.userID && o.senderID === i.userID);
             });
             dataTable.value = [...request.filter((i: any) => {
                 return i.userName.toLowerCase().includes(value.toLowerCase());
@@ -51,7 +51,7 @@ const handleSearch = (value: any) => {
             break;
         case "invitation-sent":
             const invitation = users.value.filter((i: any) => {
-                return friendRequest.value.find((o: any) => o.receiverID === i.userID && o.status === "pending" && o.senderID === user.value.userID);
+                return friendRequest.value.find((o: any) => o.receiverID === i.userID && o.senderID === user.value.userID);
             });
             dataTable.value = [...invitation.filter((i: any) => {
                 return i.userName.toLowerCase().includes(value.toLowerCase());
@@ -59,7 +59,7 @@ const handleSearch = (value: any) => {
             break;
         case "other":
             const other = users.value.filter((i: any) => {
-                return !friendRequest.value.find((o: any) => o.receiverID === i.userID && o.status === "pending");
+                return !friendRequest.value.find((o: any) => o.receiverID === i.userID && o.senderID === user.value.userID);
             });
             dataTable.value = [...other.filter((i: any) => !friends.value.find((o: any) => o === i.userID) && i.userName.toLowerCase().includes(value.toLowerCase()))];
             break;
@@ -93,20 +93,21 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
             break;
         case "friends-request":
             const request = users.value.filter((i: any) => {
-                return friendRequest.value.find((o: any) => o.receiverID === user.value.userID && o.status === "pending" && o.senderID === i.userID);
+                return friendRequest.value.find((o: any) => o.receiverID === user.value.userID && o.senderID === i.userID);
             });
             dataTable.value = [...request];
             break;
         case "invitation-sent":
             const invitation = users.value.filter((i: any) => {
-                return friendRequest.value.find((o: any) => o.receiverID === i.userID && o.status === "pending" && o.senderID === user.value.userID);
+                return friendRequest.value.find((o: any) => o.receiverID === i.userID && o.senderID === user.value.userID);
             });
             dataTable.value = [...invitation];
             break;
         case "other":
             const other = users.value.filter((i: any) => {
-                return !friendRequest.value.find((o: any) => o.receiverID === i.userID && o.status === "pending");
+                return !friendRequest.value.find((o: any) => o.receiverID === i.userID && o.senderID === user.value.userID);
             });
+
             dataTable.value = [...other.filter((i: any) => !friends.value.find((o: any) => o === i.userID))];
             break;
     }
@@ -122,7 +123,6 @@ const handleAddFriend = (receiverID: any) => {
     }
     dataTable.value = dataTable.value.filter((i: any) => i.userID !== receiverID);
 };
-
 
 
 const handleAccepted = (receiverID: any) => {
@@ -168,13 +168,10 @@ const handleUnfriend = (receiverID: any) => {
 
         ElMessage({
             type: 'success',
-            message: 'Sign out completed',
+            message: 'Unfriend completed',
         })
     }).catch(() => {
-        ElMessage({
-            type: 'info',
-            message: 'Sign out canceled',
-        })
+
     })
 };
 

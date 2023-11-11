@@ -29,9 +29,9 @@ const handleOpenFormEdit = () => {
                 <el-avatar :size="150"
                            :src="user.photoUrl"
                 />
-                <div class="h-10 w-10 rounded-full bg-white flex flex-col items-center
+                <div class="h-10 w-10 rounded-full dark:bg-white dark:hover:bg-gray-200 flex flex-col items-center
                             justify-center absolute bottom-3 right-2 cursor-pointer
-                            bg-gray-300 hover:bg-gray-400 transition"
+                            bg-gray-200 hover:bg-gray-400 transition"
                      @click="openModalUpload">
                     <el-icon :size="20">
                         <Camera/>

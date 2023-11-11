@@ -1,16 +1,12 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-    const isLoggedIn = false;
+    const authStore = useAuthStore();
 
-    // const {getUserList} = useAuth();
-
-    // to is the destination
-    // console.log(to)
-    // console.log(from)
-    if (isLoggedIn) {
-
-        // redirect to the page we want to go
-        return navigateTo(to.fullPath);
+    if (to.path === '/signup') {
+        return;
     }
-    // redirect to a login page
-    // return navigateTo("/login")
+
+    if(!authStore.$state.user && to.path !== '/login'){
+        return navigateTo('/login');
+    }
+    return;
 })

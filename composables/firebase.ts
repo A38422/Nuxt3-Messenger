@@ -3,7 +3,9 @@ import {
     getAuth,
     GoogleAuthProvider,
     signInWithPopup,
-    onAuthStateChanged
+    onAuthStateChanged,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword
 } from 'firebase/auth';
 import {
     collection,
@@ -43,18 +45,12 @@ const $auth = getAuth();
 const $firestore = getFirestore(app);
 
 export const useAuth = () => {
+    const router = useRouter();
     const authStore = useAuthStore();
     const chatStore = useChatStore();
     const {getChatList, getMessagesInChat} = useChat();
 
     const user = computed(() => authStore.$state.user);
-
-    onAuthStateChanged($auth, async _user => {
-        if (_user) {
-            await updateLastSeenTime("online");
-        }
-    });
-
 
     const signIn = async () => {
         const googleProvider = new GoogleAuthProvider();
@@ -67,19 +63,40 @@ export const useAuth = () => {
         });
     };
 
-    const signOut = async () => {
-        await updateLastSeenTime();
-        await authStore.deleteUser();
-        await authStore.deleteUserList();
-        await authStore.deleteFriendList();
-        await authStore.deleteFriendRequest();
-        await chatStore.clearChat();
-        await $auth.signOut();
+    const signInWithEmail = async (data: any) => {
+        return await signInWithEmailAndPassword($auth, data.email, data.password).then((result) => {
+            saveUserDataToFirestore(result?.user);
+            return true;
+        }).catch((error) => {
+            console.log("error: ", error.message);
+            return false;
+        });
     };
 
-    const saveUserDataToFirestore = async (user: any) => {
+    const signOut = async () => {
+        await updateLastSeenTime();
+    };
+
+    const signUp = async (data: any) => {
+        return await createUserWithEmailAndPassword($auth, data.email, data.password)
+            .then(async (userCredential) => {
+                const newUser = {
+                    ...userCredential.user,
+                    displayName: data.firstName + ' ' + data.lastName,
+                    photoURL: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                };
+
+                await saveUserDataToFirestore(newUser);
+                return true;
+        }, (error) => {
+            console.log("error: ", error.message)
+            return false;
+        });
+    };
+
+    const saveUserDataToFirestore = async (_user: any) => {
         try {
-            const {uid, displayName, email, photoURL} = user;
+            const {uid, displayName, email, photoURL} = _user;
 
             const userCollection = collection($firestore, "Users");
 
@@ -95,25 +112,39 @@ export const useAuth = () => {
                     blockedUsers: [],
                     friendList: [],
                     notificationSettings: null,
-                    lastSeen: null
+                    lastSeen: null,
+                    phone: null,
+                    address: null,
+                    education: null,
+                    company: null
                 });
 
-                getDoc(doc(userCollection, uid)).then(r => {
-                    authStore.setUser(r.data())
+                await getDoc(doc(userCollection, uid)).then(async r => {
+                    authStore.setUser({
+                        ...r.data(),
+                        lastSeen: "online"
+                    });
+
+                    getUserList();
+                    getChatList();
+                    getFriendList();
+                    getFriendRequest();
+
+                    await router.push('/');
                 });
             } else {
                 authStore.setUser({
                     ...docSnapshot.data(),
-                    lastSeen: null
+                    lastSeen: "online"
                 });
+
+                getUserList();
+                getChatList();
+                getFriendList();
+                getFriendRequest();
+
+                await router.push('/');
             }
-
-            await updateLastSeenTime("online");
-            getUserList();
-            getChatList();
-            getFriendList();
-            getFriendRequest();
-
         } catch (error) {
             console.error("error: ", error);
         }
@@ -207,6 +238,16 @@ export const useAuth = () => {
                     ...user.value,
                     lastSeen: lastSeenTime
                 });
+
+                if (lastSeenTime !== 'online') {
+                    await authStore.deleteUser();
+                    await authStore.deleteUserList();
+                    await authStore.deleteFriendList();
+                    await authStore.deleteFriendRequest();
+                    await chatStore.clearChat();
+                    await $auth.signOut();
+                    await router.push('/login');
+                }
             } catch (error) {
                 console.error("error: ", error);
             }
@@ -385,14 +426,15 @@ export const useAuth = () => {
         unsubscribeFriendRequest.value?.();
     });
 
-    window.addEventListener('beforeunload', (event) => {
-        updateLastSeenTime();
+    window.addEventListener('beforeunload', async (event) => {
+        await updateLastSeenTime();
     });
 
     return {
         user,
         signIn,
         signOut,
+        signUp,
         updateAvatar,
         acceptFriendRequest,
         rejectFriendRequest,
@@ -407,7 +449,8 @@ export const useAuth = () => {
         getUserList,
         getFriendList,
         getBlockedUsersList,
-        searchUsersByKeyword
+        searchUsersByKeyword,
+        signInWithEmail
     }
 };
 
@@ -499,7 +542,7 @@ export const useChat = () => {
                 // @ts-ignore
                 if (o && o.participants) {
                     // @ts-ignore
-                    return Boolean(o.participants.find((x: any) => x.userID === user.value.userID));
+                    return Boolean(o.participants.find((x: any) => user.value && x.userID === user.value.userID));
                 }
                 return false;
             });

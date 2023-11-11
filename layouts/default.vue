@@ -3,6 +3,7 @@ import {ChatDotRound, RemoveFilled, Setting, SwitchButton} from "@element-plus/i
 import {useLoading} from "@/composables/states";
 
 const route = useRoute();
+const router = useRouter();
 const {user, signOut, signIn, getUserList, getFriendList, getFriendRequest, updateLastSeenTime} = useAuth();
 const {getChatList} = useChat();
 const {isDarkMode} = userDarkMode();
@@ -30,10 +31,7 @@ const handleClickSignOut = () => {
             message: 'Sign out completed',
         })
     }).catch(() => {
-        ElMessage({
-            type: 'info',
-            message: 'Sign out canceled',
-        })
+
     })
 };
 
@@ -54,7 +52,6 @@ onBeforeUnmount(() => {
 
 <template>
         <el-container class="antialiased common-layout w-full h-screen text-black dark:text-slate-400 bg-white dark:bg-slate-900">
-<!--    <el-container class="common-layout h-screen w-full">-->
         <el-aside width="250px" class="aside-menu flex flex-col h-full"
                   :class="isDarkMode ? 'dark-menu' : ''">
             <NuxtLink to="/" class="block m-4 image__lazy w-fit" @click="handleLoading('/')">
@@ -118,7 +115,7 @@ onBeforeUnmount(() => {
                 </NuxtLink>
             </el-menu>
 
-            <div class="item-menu__logout">
+            <div class="item-menu__logout" :class="isDarkMode ? 'dark' : ''">
                 <div v-if="user" class="flex items-center justify-between" @click="handleClickSignOut">
                     <div class="flex items-center">
                         <el-avatar
@@ -186,6 +183,10 @@ onBeforeUnmount(() => {
             transition: border-color var(--el-transition-duration),
             background-color var(--el-transition-duration),
             color var(--el-transition-duration);
+        }
+
+        &.dark:hover {
+            background-color: #334155;
         }
     }
 
