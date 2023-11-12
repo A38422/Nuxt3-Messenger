@@ -51,10 +51,10 @@ export default defineNuxtConfig({
             projectId: process.env.PROJECT_ID,
             storageBucket: process.env.STORAGE_BUCKET,
             messagingSenderId: process.env.MESSAGING_SENDER_ID,
-            appId: process.env.APP_ID,
             measurementId: process.env.MEASUREMENT_ID,
             databaseURL: process.env.DATABASE_URL,
-            vapidKey: process.env.VAPID_KEY
+            vapidKey: process.env.VAPID_KEY,
+            appId: process.env.APP_ID
         }
     },
     // webpack: {
