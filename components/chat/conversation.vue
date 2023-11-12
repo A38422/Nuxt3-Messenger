@@ -83,9 +83,9 @@ const send = (content: String) => {
         sendMessage(
             route.query.chatId,
             content,
-            friend.value.userName,
+            user.value.userName,
             friend.value.tokenDevice || '',
-            friend.value.photoUrl
+            user.value.photoUrl
         );
     }
 };

@@ -46,7 +46,7 @@ const $auth = getAuth();
 const $firestore = getFirestore(app);
 const $messaging = getMessaging(app);
 onMessage($messaging, (payload) => {
-    // console.log('Message received. ', payload);
+    console.log('Message received. ', payload);
     let check = true;
 
     document.body.addEventListener("click", function () {
