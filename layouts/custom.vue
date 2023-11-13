@@ -31,9 +31,9 @@ const handleChange = (value: boolean) => {
             <div class="py-12 bg-indigo-100 lg:bg-white dark:lg:bg-slate-900 dark:bg-indigo-300 flex justify-center lg:justify-start lg:pl-5">
                 <div class="flex items-center">
                     <div class="m-4 image__lazy w-fit">
-                        <img src="@/assets/logo.svg" alt="" class="w-[40px]">
+                        <img src="@/assets/logo.svg" alt="" class="w-[80px]">
                     </div>
-                    <div class="text-2xl text-indigo-800 tracking-wide ml-2 font-semibold">Messenger</div>
+                    <div class="text-2xl text-indigo-800 tracking-wide ml-2 font-semibold">Infinity</div>
                 </div>
             </div>
 
