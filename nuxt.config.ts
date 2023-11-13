@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     devtools: {enabled: false},
     app: {
         head: {
-            title: "Messenger",
+            title: "Infinity",
             meta: [
                 // <meta name="viewport" content="width=device-width, initial-scale=1">
                 {name: 'viewport', content: 'width=device-width, initial-scale=1'},

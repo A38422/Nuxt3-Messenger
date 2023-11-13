@@ -56,7 +56,7 @@ updateLastSeenTime("online");
         <el-aside width="250px" class="aside-menu flex flex-col h-full"
                   :class="isDarkMode ? 'dark-menu' : ''">
             <NuxtLink to="/" class="block m-4 image__lazy w-fit" @click="handleLoading('/')">
-                <img src="@/assets/logo.svg" alt="" style="width: 40px; object-fit: cover"/>
+                <img src="@/assets/logo.svg" alt="" style="width: 70px; object-fit: cover"/>
             </NuxtLink>
 
             <el-menu

@@ -149,7 +149,7 @@ const handleNewChat = () => {
             <el-input
                 v-model="valueInput"
                 class="w-full my-5"
-                placeholder="Search Messenger"
+                placeholder="Search Infinity"
                 size="large"
                 :prefix-icon="Search"
                 @input="handleChange"

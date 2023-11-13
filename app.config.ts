@@ -1,5 +1,5 @@
 export default defineAppConfig({
-    title: "Messenger",
+    title: "Infinity",
     theme: {
         // dark: true,
         colors: {
